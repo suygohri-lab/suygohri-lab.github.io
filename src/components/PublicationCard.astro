@@ -1,0 +1,156 @@
+---
+import Icon from "./Icon.astro";
+import { isSelf, type Publication } from "../utils/publications";
+
+interface Props {
+  publication: Publication;
+}
+
+const { publication } = Astro.props;
+const { title, authors, venue, venueShort, year, pdf, code, links, bibtex, award } = publication.data;
+
+// Pass the rendered Markdown body (abstract) in the default slot to enable the "Abstract" toggle.
+const hasAbstract = Astro.slots.has("default");
+const uid = publication.id.replace(/[^a-z0-9-]/gi, "-");
+const panelClass =
+  "grid grid-rows-[0fr] opacity-0 transition-all duration-300 ease-out data-open:mt-4 data-open:grid-rows-[1fr] data-open:opacity-100";
+---
+
+<article
+  class="group rounded-xl border border-slate-200 bg-white p-5 transition-shadow hover:shadow-md hover:shadow-slate-200/60 sm:p-6 dark:border-slate-800 dark:bg-slate-900/40 dark:hover:shadow-black/20"
+>
+  <div class="mb-2 flex flex-wrap items-center gap-2">
+    <span class="rounded-md bg-indigo-50 px-2 py-0.5 text-xs font-semibold tracking-wide text-indigo-700 ring-1 ring-indigo-200 ring-inset dark:bg-indigo-500/10 dark:text-indigo-300 dark:ring-indigo-500/30">
+      {venueShort ?? venue} {year}
+    </span>
+    {
+      award && (
+        <span class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-800 ring-1 ring-amber-200 ring-inset dark:bg-amber-500/10 dark:text-amber-300 dark:ring-amber-500/30">
+          <Icon name="award" class="size-3.5" />
+          {award}
+        </span>
+      )
+    }
+  </div>
+
+  <h3 class="text-lg leading-snug font-semibold sm:text-xl">{title}</h3>
+
+  <p class="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+    {
+      authors.map((author, i) => (
+        <>
+          {isSelf(author) ? (
+            <strong class="font-semibold text-slate-900 dark:text-slate-100">{author}</strong>
+          ) : (
+            author
+          )}
+          {i < authors.length - 1 && ", "}
+        </>
+      ))
+    }
+  </p>
+
+  <p class="mt-1 text-sm text-slate-500 italic dark:text-slate-400">{venue}, {year}</p>
+
+  <div class="mt-4 flex flex-wrap gap-2">
+    {
+      pdf && (
+        <a class="btn" href={pdf} target="_blank" rel="noopener noreferrer">
+          <Icon name="pdf" class="size-3.5" /> PDF
+        </a>
+      )
+    }
+    {
+      code && (
+        <a class="btn" href={code} target="_blank" rel="noopener noreferrer">
+          <Icon name="code" class="size-3.5" /> Code
+        </a>
+      )
+    }
+    {
+      links.map(({ label, url }) => (
+        <a class="btn" href={url} target="_blank" rel="noopener noreferrer">
+          <Icon name="external" class="size-3.5" /> {label}
+        </a>
+      ))
+    }
+    {
+      hasAbstract && (
+        <button type="button" class="btn group/t" data-pub-toggle aria-expanded="false" aria-controls={`abs-${uid}`}>
+          <Icon name="text" class="size-3.5" /> Abstract
+          <Icon name="chevron" class="size-3.5 transition-transform group-aria-expanded/t:rotate-180" />
+        </button>
+      )
+    }
+    {
+      bibtex && (
+        <button type="button" class="btn group/t" data-pub-toggle aria-expanded="false" aria-controls={`bib-${uid}`}>
+          <Icon name="quote" class="size-3.5" /> BibTeX
+          <Icon name="chevron" class="size-3.5 transition-transform group-aria-expanded/t:rotate-180" />
+        </button>
+      )
+    }
+  </div>
+
+  {
+    hasAbstract && (
+      <div id={`abs-${uid}`} class={panelClass} inert>
+        <div class="overflow-hidden">
+          <div class="rounded-lg border-l-2 border-indigo-400 bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-700 dark:bg-slate-800/50 dark:text-slate-300">
+            <slot />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    bibtex && (
+      <div id={`bib-${uid}`} class={panelClass} inert>
+        <div class="overflow-hidden">
+          <div class="relative">
+            <pre class="overflow-x-auto rounded-lg bg-slate-900 p-4 pr-12 font-mono text-xs leading-relaxed text-slate-100 ring-1 ring-slate-800 dark:bg-black/40"><code>{bibtex.trim()}</code></pre>
+            <button
+              type="button"
+              data-copy-bibtex
+              aria-label="Copy BibTeX"
+              title="Copy BibTeX"
+              class="absolute top-2 right-2 grid size-8 place-items-center rounded-md text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
+            >
+              <Icon name="copy" class="size-4 [[data-copied]_&]:hidden" />
+              <Icon name="check" class="hidden size-4 text-emerald-400 [[data-copied]_&]:block" />
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+</article>
+
+<script>
+  // Event delegation: one listener handles every card on the page.
+  document.addEventListener("click", async (event) => {
+    const target = event.target as Element;
+
+    const toggle = target.closest<HTMLButtonElement>("[data-pub-toggle]");
+    if (toggle) {
+      const panel = document.getElementById(toggle.getAttribute("aria-controls") ?? "");
+      if (!panel) return;
+      const open = toggle.getAttribute("aria-expanded") !== "true";
+      toggle.setAttribute("aria-expanded", String(open));
+      panel.toggleAttribute("data-open", open);
+      panel.inert = !open;
+      return;
+    }
+
+    const copy = target.closest<HTMLButtonElement>("[data-copy-bibtex]");
+    if (copy) {
+      const text = copy.parentElement?.querySelector("code")?.textContent ?? "";
+      try {
+        await navigator.clipboard.writeText(text);
+        copy.setAttribute("data-copied", "");
+        setTimeout(() => copy.removeAttribute("data-copied"), 1500);
+      } catch {}
+    }
+  });
+</script>

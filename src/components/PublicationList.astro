@@ -1,0 +1,29 @@
+---
+import { render } from "astro:content";
+import PublicationCard from "./PublicationCard.astro";
+import type { Publication } from "../utils/publications";
+
+interface Props {
+  publications: Publication[];
+}
+
+const { publications } = Astro.props;
+
+// Render each paper's Markdown body (if any) so it can be shown as the abstract.
+const items = await Promise.all(
+  publications.map(async (publication) => ({
+    publication,
+    Content: publication.body?.trim() ? (await render(publication)).Content : null,
+  })),
+);
+---
+
+<ol class="flex flex-col gap-4">
+  {
+    items.map(({ publication, Content }) => (
+      <li>
+        <PublicationCard publication={publication}>{Content && <Content />}</PublicationCard>
+      </li>
+    ))
+  }
+</ol>

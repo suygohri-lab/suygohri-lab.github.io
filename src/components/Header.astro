@@ -1,0 +1,82 @@
+---
+import Icon from "./Icon.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+import { nav, site } from "../data/site";
+
+const strip = (path: string) => path.replace(/\/+$/, "") || "/";
+const current = strip(Astro.url.pathname);
+const isActive = (href: string) =>
+  href === "/" ? current === "/" : current === strip(href) || current.startsWith(strip(href) + "/");
+---
+
+<header
+  class="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/80"
+>
+  <div class="container-page flex h-16 items-center justify-between gap-4">
+    <a href="/" class="font-serif text-lg font-semibold text-slate-900 hover:text-indigo-700 dark:text-slate-50 dark:hover:text-indigo-300">
+      {site.name}
+    </a>
+
+    <div class="flex items-center gap-1">
+      <nav aria-label="Main" class="hidden sm:block">
+        <ul class="flex items-center gap-1">
+          {
+            nav.map(({ label, href }) => (
+              <li>
+                <a
+                  href={href}
+                  aria-current={isActive(href) ? "page" : undefined}
+                  class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 aria-[current=page]:text-indigo-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 dark:aria-[current=page]:text-indigo-300"
+                >
+                  {label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <ThemeToggle />
+
+      <button
+        type="button"
+        id="menu-button"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+        class="grid size-9 place-items-center rounded-lg text-slate-600 hover:bg-slate-100 sm:hidden dark:text-slate-400 dark:hover:bg-slate-800"
+      >
+        <Icon name="menu" class="size-5" />
+      </button>
+    </div>
+  </div>
+
+  <nav id="mobile-nav" aria-label="Main" class="hidden border-t border-slate-200 sm:hidden dark:border-slate-800">
+    <ul class="container-page flex flex-col py-2">
+      {
+        nav.map(({ label, href }) => (
+          <li>
+            <a
+              href={href}
+              aria-current={isActive(href) ? "page" : undefined}
+              class="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 aria-[current=page]:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:aria-[current=page]:text-indigo-300"
+            >
+              {label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const button = document.getElementById("menu-button");
+  const menu = document.getElementById("mobile-nav");
+  button?.addEventListener("click", () => {
+    const open = button.getAttribute("aria-expanded") === "true";
+    button.setAttribute("aria-expanded", String(!open));
+    button.setAttribute("aria-label", open ? "Open menu" : "Close menu");
+    menu?.classList.toggle("hidden", open);
+  });
+</script>

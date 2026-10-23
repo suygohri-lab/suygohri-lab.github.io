@@ -1,0 +1,17 @@
+---
+import SocialLinks from "./SocialLinks.astro";
+import { site } from "../data/site";
+
+const year = new Date().getFullYear();
+const updated = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+---
+
+<footer class="mt-24 border-t border-slate-200 dark:border-slate-800">
+  <div class="container-page flex flex-col items-center justify-between gap-4 py-8 text-sm text-slate-500 sm:flex-row dark:text-slate-400">
+    <div class="text-center sm:text-left">
+      <p>&copy; {year} {site.name}</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500">Last updated {updated}</p>
+    </div>
+    <SocialLinks size="sm" />
+  </div>
+</footer>
