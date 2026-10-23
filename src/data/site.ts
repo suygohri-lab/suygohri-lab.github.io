@@ -2,13 +2,13 @@
  * Central profile configuration. Edit this file to personalise the site.
  */
 export const site = {
-  name: "Your Name",
+  name: "Suyash",
   title: "Ph.D. Candidate in Computer Science",
   description: "Personal academic website: research, publications, and CV.",
   affiliation: {
-    department: "Department of Computer Science",
-    university: "Your University",
-    url: "https://www.example.edu",
+    department: "Department of Computer Science & Engineering",
+    university: "Punjab Engineering College (PEC), Chandigarh",
+    url: "https://pec.ac.in/",
   },
   lab: { name: "Your Research Lab", url: "https://lab.example.edu" },
   advisor: { name: "Prof. Advisor Name", url: "https://www.example.edu/~advisor" },
