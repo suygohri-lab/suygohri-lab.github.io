@@ -1,6 +1,5 @@
 ---
 import "@fontsource-variable/inter";
-import "@fontsource-variable/source-serif-4";
 import "@fontsource-variable/jetbrains-mono";
 import "../styles/global.css";
 
@@ -51,12 +50,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   <body class="flex min-h-screen flex-col">
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-indigo-600 focus:px-3 focus:py-2 focus:text-white"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-bg focus:px-3 focus:py-2 focus:text-accent"
     >
       Skip to content
     </a>
     <Header />
-    <main id="main" class="container-page flex-1 py-12 sm:py-16">
+    <main id="main" class="container-page flex-1 py-14 sm:py-20">
       <slot />
     </main>
     <Footer />

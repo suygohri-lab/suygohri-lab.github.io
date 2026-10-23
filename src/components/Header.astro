@@ -7,27 +7,24 @@ const strip = (path: string) => path.replace(/\/+$/, "") || "/";
 const current = strip(Astro.url.pathname);
 const isActive = (href: string) =>
   href === "/" ? current === "/" : current === strip(href) || current.startsWith(strip(href) + "/");
+
+const linkClass =
+  "text-sm text-muted transition-colors hover:text-fg aria-[current=page]:text-accent aria-[current=page]:font-medium";
 ---
 
-<header
-  class="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/80"
->
+<header class="sticky top-0 z-40 bg-bg/85 backdrop-blur-md">
   <div class="container-page flex h-16 items-center justify-between gap-4">
-    <a href="/" class="font-serif text-lg font-semibold text-slate-900 hover:text-indigo-700 dark:text-slate-50 dark:hover:text-indigo-300">
+    <a href="/" class="text-[15px] font-semibold tracking-tight text-fg">
       {site.name}
     </a>
 
-    <div class="flex items-center gap-1">
+    <div class="flex items-center gap-6">
       <nav aria-label="Main" class="hidden sm:block">
-        <ul class="flex items-center gap-1">
+        <ul class="flex items-center gap-7">
           {
             nav.map(({ label, href }) => (
               <li>
-                <a
-                  href={href}
-                  aria-current={isActive(href) ? "page" : undefined}
-                  class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 aria-[current=page]:text-indigo-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 dark:aria-[current=page]:text-indigo-300"
-                >
+                <a href={href} aria-current={isActive(href) ? "page" : undefined} class={linkClass}>
                   {label}
                 </a>
               </li>
@@ -44,23 +41,19 @@ const isActive = (href: string) =>
         aria-label="Open menu"
         aria-expanded="false"
         aria-controls="mobile-nav"
-        class="grid size-9 place-items-center rounded-lg text-slate-600 hover:bg-slate-100 sm:hidden dark:text-slate-400 dark:hover:bg-slate-800"
+        class="-mr-1 grid size-8 place-items-center text-muted transition-colors hover:text-fg sm:hidden"
       >
         <Icon name="menu" class="size-5" />
       </button>
     </div>
   </div>
 
-  <nav id="mobile-nav" aria-label="Main" class="hidden border-t border-slate-200 sm:hidden dark:border-slate-800">
-    <ul class="container-page flex flex-col py-2">
+  <nav id="mobile-nav" aria-label="Main" class="hidden sm:hidden">
+    <ul class="container-page flex flex-col gap-1 pb-4">
       {
         nav.map(({ label, href }) => (
           <li>
-            <a
-              href={href}
-              aria-current={isActive(href) ? "page" : undefined}
-              class="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 aria-[current=page]:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:aria-[current=page]:text-indigo-300"
-            >
+            <a href={href} aria-current={isActive(href) ? "page" : undefined} class:list={[linkClass, "block py-2"]}>
               {label}
             </a>
           </li>

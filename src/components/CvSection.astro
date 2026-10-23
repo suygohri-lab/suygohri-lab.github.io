@@ -9,26 +9,25 @@ interface Props {
 const { title, entries } = Astro.props;
 ---
 
-<section class="mt-14 first:mt-0">
-  <h2 class="section-title">{title}</h2>
-  <ol class="relative space-y-8 border-l border-slate-200 pl-6 dark:border-slate-800">
+<section class="mt-20 first:mt-0">
+  <h2 class="section-label">{title}</h2>
+  <ol class="space-y-8">
     {
       entries.map(({ title, org, url, location, period, details }) => (
-        <li class="relative">
-          <span class="absolute top-2 -left-[29px] size-2.5 rounded-full bg-indigo-500 ring-4 ring-white dark:ring-slate-950" />
-          <div class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-            <h3 class="font-sans text-base font-semibold">{title}</h3>
-            <span class="shrink-0 font-mono text-sm text-slate-500 dark:text-slate-400">{period}</span>
+        <li class="grid gap-x-8 gap-y-1 sm:grid-cols-[7rem_1fr]">
+          <p class="font-mono text-xs leading-6 tracking-wider text-muted uppercase">{period}</p>
+          <div>
+            <h3 class="text-base leading-6">{title}</h3>
+            <p class="text-sm text-muted">
+              {url ? <a class="link" href={url} target="_blank" rel="noopener noreferrer">{org}</a> : org}
+              {location && <span> &middot; {location}</span>}
+            </p>
+            {details && details.length > 0 && (
+              <ul class="mt-2 space-y-1 text-sm">
+                {details.map((d) => <li>{d}</li>)}
+              </ul>
+            )}
           </div>
-          <p class="text-sm text-slate-600 dark:text-slate-400">
-            {url ? <a class="link" href={url} target="_blank" rel="noopener noreferrer">{org}</a> : org}
-            {location && <span> &middot; {location}</span>}
-          </p>
-          {details && details.length > 0 && (
-            <ul class="mt-2 list-disc space-y-1 pl-5 text-sm marker:text-slate-400">
-              {details.map((d) => <li>{d}</li>)}
-            </ul>
-          )}
         </li>
       ))
     }
