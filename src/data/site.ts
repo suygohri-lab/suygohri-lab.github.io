@@ -10,8 +10,8 @@ export const site = {
     university: "Punjab Engineering College (PEC), Chandigarh",
     url: "https://pec.ac.in/",
   },
-  // lab: { name: "Your Research Lab", url: "https://lab.example.edu" },
-  // advisor: { name: "Prof. Advisor Name", url: "https://www.example.edu/~advisor" },
+  lab: { name: "Your Research Lab", url: "https://lab.example.edu" },
+  advisor: { name: "Prof. Advisor Name", url: "https://www.example.edu/~advisor" },
   location: "Chandigarh, India",
   email: "suyashsuyash.phd26cse@pec.edu.in",
 
