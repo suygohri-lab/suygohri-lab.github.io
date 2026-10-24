@@ -14,16 +14,16 @@ export interface CvEntry {
 export const education: CvEntry[] = [
   {
     title: "Ph.D. in Computer Science",
-    org: "Your University",
-    location: "City, Country",
-    period: "2023 – Present",
+    org: "Punjab Engineering College (Deemed to be University)",
+    location: "Chandigarh, India",
+    period: "2026 - ...",
     details: ["Advisor: Prof. Advisor Name", "Thesis topic: Efficient and trustworthy learning systems"],
   },
   {
-    title: "B.S. in Computer Science",
-    org: "Your Undergraduate University",
-    location: "City, Country",
-    period: "2019 – 2023",
+    title: "M.Sc. in Computer Science",
+    org: "Kurukshetra University",
+    location: "Kurukshetra, India",
+    period: "2023 - 2025",
     details: ["Graduated with highest honors"],
   },
 ];
@@ -50,7 +50,7 @@ export const teaching: CvEntry[] = [
 ];
 
 export const awards: { title: string; year: string }[] = [
-  { title: "Graduate Research Fellowship", year: "2024" },
+  { title: "Junior Research Fellowship UGC NET-JRF", year: "2025" },
   { title: "Outstanding Undergraduate Researcher Award", year: "2023" },
 ];
 
@@ -60,7 +60,7 @@ export const service: string[] = [
 ];
 
 export const skills: { label: string; items: string[] }[] = [
-  { label: "Languages", items: ["Python", "C++", "Rust", "TypeScript"] },
-  { label: "Frameworks", items: ["PyTorch", "JAX", "CUDA", "Triton"] },
-  { label: "Tools", items: ["Git", "Docker", "Slurm", "LaTeX"] },
+  { label: "Languages", items: ["Python", "C++", "C"] },
+  { label: "Frameworks", items: ["PyTorch", "JAX", "CUDA"] },
+  { label: "Tools", items: ["Git", "LaTeX"] },
 ];
