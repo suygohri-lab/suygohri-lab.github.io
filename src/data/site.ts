@@ -3,7 +3,7 @@
  */
 export const site = {
   name: "Suyash",
-  title: "Ph.D. Candidate in Computer Science",
+  title: "Research Scholar (UGC-JRF) in Computer Science",
   description: "Personal academic website: research, publications, and CV.",
   affiliation: {
     department: "Department of Computer Science & Engineering",
@@ -12,21 +12,20 @@ export const site = {
   },
   lab: { name: "Your Research Lab", url: "https://lab.example.edu" },
   advisor: { name: "Prof. Advisor Name", url: "https://www.example.edu/~advisor" },
-  location: "City, Country",
-  email: "you@example.edu",
+  location: "Chandigarh, India",
+  email: "suyashsuyash.phd26cse@pec.edu.in",
 
   /** Each string is rendered as its own paragraph. */
   bio: [
-    "I am a Ph.D. candidate in Computer Science working on trustworthy and efficient machine learning systems. My research sits at the intersection of machine learning, systems, and programming languages, with a focus on methods that are both theoretically grounded and practical at scale.",
-    "Previously, I completed my B.S. at Your Undergraduate University and interned at industry research labs. I am always happy to chat about research collaborations.",
+    "Research Scholar (UGC-JRF) in Computer Science I work on Quantum Computing and Artificial Intelligence, with a focus on how quantum approaches can be used to design AI algorithms. I completed my M.Sc. at Kurukshetra University and teach as an assistant professor at MLN College, Yamuna Nagar. I’m early in my research career and keen to learn, so I welcome conversations with people working on related problems.",
   ],
 
   researchInterests: [
-    "Machine Learning",
-    "Efficient Deep Learning",
-    "ML Systems",
-    "Program Synthesis",
+    "Quantum Computing",
     "Trustworthy AI",
+    "Bayesian Network",
+    "Semantic AI",
+    "Knowledge Graph",
   ],
 
   socials: {
