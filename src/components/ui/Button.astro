@@ -1,5 +1,6 @@
 ---
 import type { HTMLAttributes } from "astro/types";
+import { linkProps } from "../../utils/links";
 
 /**
  * Link styled as a button. `primary` uses the accent fill (one per view);
@@ -9,11 +10,9 @@ interface Props extends HTMLAttributes<"a"> {
   href: string;
   variant?: "primary" | "secondary";
   size?: "md" | "sm";
-  /** Open in a new tab. */
-  external?: boolean;
 }
 
-const { href, variant = "primary", size = "md", external = false, class: className, ...rest } = Astro.props;
+const { href, variant = "primary", size = "md", class: className, ...rest } = Astro.props;
 
 const variants = {
   primary: "bg-accent text-on-accent hover:bg-accent-hover",
@@ -27,8 +26,7 @@ const sizes = {
 
 <a
   href={href}
-  target={external ? "_blank" : undefined}
-  rel={external ? "noopener noreferrer" : undefined}
+  {...linkProps(href)}
   class:list={[
     "comic-button inline-flex items-center justify-center font-bold",
     variants[variant],

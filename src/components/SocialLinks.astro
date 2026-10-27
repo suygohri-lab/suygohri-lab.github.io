@@ -1,6 +1,7 @@
 ---
 import Icon, { type IconName } from "./Icon.astro";
 import { site } from "../data/site";
+import { linkProps } from "../utils/links";
 
 interface Props {
   size?: "sm" | "md";
@@ -12,10 +13,10 @@ const links: { label: string; href: string; icon: IconName }[] = [
   { label: "GitHub", href: site.socials.github, icon: "github" },
   { label: "Google Scholar", href: site.socials.scholar, icon: "scholar" },
   { label: "LinkedIn", href: site.socials.linkedin, icon: "linkedin" },
-  { label: "Email", href: `mailto:${site.email}`, icon: "mail" },
+  { label: "Email", href: site.socials.email, icon: "mail" },
 ];
 
-const box = size === "sm" ? "size-9 rounded-lg" : "size-11 rounded-xl";
+const box = size === "sm" ? "size-11 rounded-lg" : "size-11 rounded-xl";
 const icon = size === "sm" ? "size-4" : "size-[18px]";
 ---
 
@@ -27,8 +28,7 @@ const icon = size === "sm" ? "size-4" : "size-[18px]";
           href={href}
           aria-label={label}
           title={label}
-          target={href.startsWith("mailto:") ? undefined : "_blank"}
-          rel="noopener noreferrer"
+          {...linkProps(href)}
           class:list={[
             box,
             "comic-button grid place-items-center bg-card text-fg hover:text-link",

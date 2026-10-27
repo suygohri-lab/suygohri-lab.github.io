@@ -6,8 +6,8 @@ venueShort: "ICML"
 year: 2025
 month: 7
 type: conference
-pdf: "https://arxiv.org/abs/0000.00001"
-code: "https://github.com/suygohri-lab/verified-synthesis"
+pdf: "#"
+code: "#"
 selected: true
 bibtex: |
   @inproceedings{researcher2025neural,
@@ -16,6 +16,7 @@ bibtex: |
     booktitle = {International Conference on Machine Learning},
     year      = {2025}
   }
+draft: true # sample paper: a template to copy, not shown on the site
 ---
 
 We combine learned search heuristics with an SMT-backed verifier to synthesize programs that are

@@ -1,5 +1,8 @@
 /**
  * Central profile configuration. Edit this file to personalise the site.
+ *
+ * Links to other websites are "#" placeholders: replace each "#" with the real URL
+ * (e.g. "https://pec.ac.in/") and it will open in a new tab automatically.
  */
 export const site = {
   name: "Suyash",
@@ -8,10 +11,10 @@ export const site = {
   affiliation: {
     department: "Department of Computer Science & Engineering",
     university: "Punjab Engineering College (PEC), Chandigarh",
-    url: "https://pec.ac.in/",
+    url: "#",
   },
-  lab: { name: "Your Research Lab", url: "https://lab.example.edu" },
-  advisor: { name: "Prof. Advisor Name", url: "https://www.example.edu/~advisor" },
+  lab: { name: "Your Research Lab", url: "#" },
+  advisor: { name: "Prof. Advisor Name", url: "#" },
   location: "Chandigarh, India",
   email: "suyashsuyash.phd26cse@pec.edu.in",
 
@@ -29,22 +32,20 @@ export const site = {
   ],
 
   socials: {
-    github: "https://github.com/suygohri-lab",
-    scholar: "https://scholar.google.com/citations?user=YOUR_SCHOLAR_ID",
-    linkedin: "https://www.linkedin.com/in/your-handle",
+    github: "#", // e.g. "https://github.com/suygohri-lab"
+    scholar: "#", // e.g. "https://scholar.google.com/citations?user=YOUR_ID"
+    linkedin: "#", // e.g. "https://www.linkedin.com/in/your-handle"
+    email: "#", // e.g. "mailto:suyashsuyash.phd26cse@pec.edu.in"
   },
 
   /**
    * Every spelling of your name that appears in author lists.
    * Matching authors are rendered in bold on publication cards.
    */
-  authorAliases: ["Your Name", "Y. Name"],
+  authorAliases: ["Suyash"],
 
-  news: [
-    { date: "2026-09", text: "Our paper on adaptive sparse attention was accepted to NeurIPS 2026 as a spotlight." },
-    { date: "2026-06", text: "Started a research internship at Example Research Lab." },
-    { date: "2026-02", text: "Passed my qualifying exam." },
-  ],
+  /** Newest first, e.g. { date: "2026-09", text: "Paper accepted at ..." }. The section hides when empty. */
+  news: [] as { date: string; text: string }[],
 } as const;
 
 export const nav = [

@@ -2,6 +2,7 @@
 import Card from "./ui/Card.astro";
 import Section from "./ui/Section.astro";
 import type { CvEntry } from "../data/cv";
+import { linkProps } from "../utils/links";
 
 interface Props {
   title: string;
@@ -12,6 +13,7 @@ interface Props {
 const { title, eyebrow, entries } = Astro.props;
 ---
 
+{entries.length > 0 && (
 <Section title={title} eyebrow={eyebrow} class="border-t border-line">
   <Card padded={false} class="max-w-4xl" data-reveal>
     <ol class="divide-y divide-line">
@@ -22,7 +24,7 @@ const { title, eyebrow, entries } = Astro.props;
             <div>
               <h3 class="text-lg leading-snug">{title}</h3>
               <p class="mt-1 text-base text-muted">
-                {url ? <a class="link" href={url} target="_blank" rel="noopener noreferrer">{org}</a> : org}
+                {url ? <a class="link" href={url} {...linkProps(url)}>{org}</a> : org}
                 {location && <span> &middot; {location}</span>}
               </p>
               {details && details.length > 0 && (
@@ -37,3 +39,4 @@ const { title, eyebrow, entries } = Astro.props;
     </ol>
   </Card>
 </Section>
+)}

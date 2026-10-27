@@ -2,6 +2,7 @@
 import Icon, { type IconName } from "./Icon.astro";
 import Card from "./ui/Card.astro";
 import { isSelf, type Publication } from "../utils/publications";
+import { linkProps } from "../utils/links";
 
 interface Props {
   publication: Publication;
@@ -15,7 +16,7 @@ const hasAbstract = Astro.slots.has("default");
 const uid = publication.id.replace(/[^a-z0-9-]/gi, "-");
 
 const button =
-  "comic-button inline-flex items-center gap-1.5 rounded-lg bg-card px-3 py-1.5 text-sm font-semibold text-fg hover:text-link aria-expanded:bg-accent aria-expanded:text-on-accent aria-expanded:hover:text-on-accent";
+  "comic-button inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-card px-3.5 py-2 text-sm font-semibold text-fg hover:text-link aria-expanded:bg-accent aria-expanded:text-on-accent aria-expanded:hover:text-on-accent";
 const panel =
   "grid grid-rows-[0fr] opacity-0 transition-all duration-300 ease-in-out data-open:mt-5 data-open:grid-rows-[1fr] data-open:opacity-100";
 
@@ -58,14 +59,14 @@ const outbound: { label: string; url: string; icon: IconName }[] = [
   <div class="mt-5 flex flex-wrap gap-2">
     {
       outbound.map(({ label, url, icon }) => (
-        <a class={button} href={url} target="_blank" rel="noopener noreferrer">
+        <a class={button} href={url} aria-label={`${label}: ${title}`} {...linkProps(url)}>
           <Icon name={icon} class="size-4" /> {label}
         </a>
       ))
     }
     {
       hasAbstract && (
-        <button type="button" class:list={[button, "group/t"]} data-pub-toggle aria-expanded="false" aria-controls={`abs-${uid}`}>
+        <button type="button" class:list={[button, "group/t"]} data-pub-toggle aria-expanded="false" aria-controls={`abs-${uid}`} aria-label={`Abstract: ${title}`}>
           <Icon name="text" class="size-4" /> Abstract
           <Icon name="chevron" class="size-3.5 transition-all duration-200 ease-in-out group-aria-expanded/t:rotate-180" />
         </button>
@@ -73,7 +74,7 @@ const outbound: { label: string; url: string; icon: IconName }[] = [
     }
     {
       bibtex && (
-        <button type="button" class:list={[button, "group/t"]} data-pub-toggle aria-expanded="false" aria-controls={`bib-${uid}`}>
+        <button type="button" class:list={[button, "group/t"]} data-pub-toggle aria-expanded="false" aria-controls={`bib-${uid}`} aria-label={`BibTeX: ${title}`}>
           <Icon name="quote" class="size-4" /> BibTeX
           <Icon name="chevron" class="size-3.5 transition-all duration-200 ease-in-out group-aria-expanded/t:rotate-180" />
         </button>
@@ -98,13 +99,13 @@ const outbound: { label: string; url: string; icon: IconName }[] = [
       <div id={`bib-${uid}`} class={panel} inert>
         <div class="overflow-hidden">
           <div class="relative">
-            <pre class="overflow-x-auto rounded-xl bg-surface p-5 pr-14 font-mono text-xs leading-relaxed text-text"><code>{bibtex.trim()}</code></pre>
+            <pre class="overflow-x-auto rounded-xl bg-surface p-5 pr-16 font-mono text-xs leading-relaxed text-text"><code>{bibtex.trim()}</code></pre>
             <button
               type="button"
               data-copy-bibtex
-              aria-label="Copy BibTeX"
+              aria-label={`Copy BibTeX for ${title}`}
               title="Copy BibTeX"
-              class="comic-button absolute top-3 right-3 grid size-8 place-items-center rounded-lg bg-card text-fg hover:text-link"
+              class="comic-button absolute top-3 right-3 grid size-11 place-items-center rounded-lg bg-card text-fg hover:text-link"
             >
               <Icon name="copy" class="size-4 [[data-copied]_&]:hidden" />
               <Icon name="check" class="hidden size-4 text-link [[data-copied]_&]:block" />
@@ -134,12 +135,22 @@ const outbound: { label: string; url: string; icon: IconName }[] = [
 
     const copy = target.closest<HTMLButtonElement>("[data-copy-bibtex]");
     if (copy) {
-      const text = copy.parentElement?.querySelector("code")?.textContent ?? "";
+      const code = copy.parentElement?.querySelector("code");
+      // Screen readers hear the result through the page's live region (BaseLayout).
+      const announce = (message: string) => {
+        const status = document.getElementById("live-status");
+        if (status) status.textContent = message;
+      };
       try {
-        await navigator.clipboard.writeText(text);
+        await navigator.clipboard.writeText(code?.textContent ?? "");
         copy.setAttribute("data-copied", "");
         setTimeout(() => copy.removeAttribute("data-copied"), 1500);
-      } catch {}
+        announce("BibTeX copied to clipboard.");
+      } catch {
+        // Clipboard blocked (e.g. no permission): select the text so it can be copied by hand.
+        if (code) getSelection()?.selectAllChildren(code);
+        announce("Could not copy automatically. The BibTeX is selected; press Ctrl+C or Command+C.");
+      }
     }
   });
 </script>

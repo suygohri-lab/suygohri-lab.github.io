@@ -30,7 +30,12 @@ const { text, speed = 120, delay = 500 } = Astro.props;
     vertical-align: -0.04em;
     border-radius: 1px;
     background: var(--link);
-    animation: caret-blink 1s step-end infinite;
+    /* Blinks 8 times after typing ends, then stays visible (no endless motion). */
+    animation: caret-blink 1s step-end 8;
+  }
+  /* The hidden screen-reader copy must not be selectable, or copying gives the name twice. */
+  .sr-only {
+    user-select: none;
   }
   /* The caret stays solid while letters are being typed, like a real editor. */
   .typed.is-typing .typed__caret {

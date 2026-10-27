@@ -45,10 +45,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         } catch {}
         document.documentElement.classList.toggle("dark", theme === "dark");
         document.documentElement.classList.add("js");
+        // Safety net: if the reveal script never runs (blocked or failed), show the content anyway.
+        setTimeout(() => {
+          if (!document.querySelector(".revealed")) document.documentElement.classList.remove("js");
+        }, 3000);
       })();
     </script>
   </head>
-  <body class="flex min-h-screen flex-col">
+  <body class="flex min-h-dvh flex-col">
     <a
       href="#main"
       class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-card focus:px-4 focus:py-2 focus:text-link focus:shadow-md"
@@ -61,24 +65,36 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       <slot />
     </main>
     <Footer />
+    <!-- Polite announcements for screen readers (e.g. "BibTeX copied"). -->
+    <p id="live-status" class="sr-only" role="status" aria-live="polite"></p>
 
     <script>
       // Reveal elements as they scroll into view; items arriving together are staggered.
       const targets = document.querySelectorAll("[data-reveal]");
-      const observer = new IntersectionObserver(
-        (entries) => {
-          let i = 0;
-          for (const entry of entries) {
-            if (!entry.isIntersecting) continue;
-            const el = entry.target as HTMLElement;
-            el.style.setProperty("--reveal-delay", `${i++ * 90}ms`);
-            el.classList.add("revealed");
-            observer.unobserve(el);
-          }
-        },
-        { rootMargin: "0px 0px -8% 0px" },
-      );
-      targets.forEach((el) => observer.observe(el));
+      if (!("IntersectionObserver" in window)) {
+        // Old browsers: show everything at once instead of leaving it hidden.
+        targets.forEach((el) => el.classList.add("revealed"));
+      } else {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            let i = 0;
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              const el = entry.target as HTMLElement;
+              el.style.setProperty("--reveal-delay", `${i++ * 90}ms`);
+              el.classList.add("revealed");
+              observer.unobserve(el);
+            }
+          },
+          { rootMargin: "0px 0px -8% 0px" },
+        );
+        targets.forEach((el) => observer.observe(el));
+      }
+
+      // "#" placeholder links (not filled in yet) should not jump to the top of the page.
+      document.addEventListener("click", (event) => {
+        if ((event.target as Element).closest('a[href="#"]')) event.preventDefault();
+      });
     </script>
   </body>
 </html>

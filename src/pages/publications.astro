@@ -4,6 +4,7 @@ import Icon from "../components/Icon.astro";
 import PublicationList from "../components/PublicationList.astro";
 import Button from "../components/ui/Button.astro";
 import Container from "../components/ui/Container.astro";
+import EmptyState from "../components/ui/EmptyState.astro";
 import PageHeader from "../components/ui/PageHeader.astro";
 import { site } from "../data/site";
 import { getPublications, groupByYear } from "../utils/publications";
@@ -14,17 +15,22 @@ const byYear = groupByYear(publications);
 
 <BaseLayout title="Publications" description={`Publications by ${site.name}.`}>
   <PageHeader
-    eyebrow={`${publications.length} papers`}
+    eyebrow={publications.length > 0 ? `${publications.length} paper${publications.length === 1 ? "" : "s"}` : "Research output"}
     title="Publications"
     description="My name is shown in <strong class='font-semibold text-fg'>bold</strong>; * marks equal contribution."
   >
-    <Button href={site.socials.scholar} variant="secondary" external>
+    <Button href={site.socials.scholar} variant="secondary">
       <Icon name="scholar" class="size-4" /> Google Scholar
     </Button>
   </PageHeader>
 
   <section aria-label="Papers by year" class="pb-24 md:pb-32">
     <Container class="space-y-16 md:space-y-20">
+      {
+        byYear.length === 0 && (
+          <EmptyState title="Papers coming soon" message="My first publications are in progress. They will be listed here, newest first, once they are out." />
+        )
+      }
       {
         byYear.map(([year, pubs]) => (
           <section aria-labelledby={`year-${year}`}>

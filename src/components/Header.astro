@@ -13,9 +13,9 @@ const linkClass =
   "rounded-lg px-3 py-2 text-sm font-medium text-muted transition-all duration-200 ease-in-out hover:bg-surface hover:text-fg aria-[current=page]:text-link";
 ---
 
-<header class="sticky top-0 z-40 border-b-2 border-ink bg-bg/90 backdrop-blur-md">
+<header class="sticky top-0 z-40 border-b-2 border-ink bg-bg/95 sm:bg-bg/85 sm:backdrop-blur-md">
   <Container class="flex h-16 items-center justify-between gap-4">
-    <a href="/" class="text-base font-bold tracking-tight text-fg transition-all duration-200 ease-in-out hover:text-link">
+    <a href="/" class="inline-flex min-h-11 items-center text-base font-bold tracking-tight text-fg transition-all duration-200 ease-in-out hover:text-link">
       {site.name}
     </a>
 
@@ -42,9 +42,10 @@ const linkClass =
         aria-label="Open menu"
         aria-expanded="false"
         aria-controls="mobile-nav"
-        class="grid size-9 place-items-center rounded-lg text-muted transition-all duration-200 ease-in-out hover:bg-surface hover:text-fg sm:hidden"
+        class="group grid size-11 place-items-center rounded-lg text-muted transition-all duration-200 ease-in-out hover:bg-surface hover:text-fg sm:hidden"
       >
-        <Icon name="menu" class="size-5" />
+        <Icon name="menu" class="size-5 group-aria-expanded:hidden" />
+        <Icon name="close" class="hidden size-5 group-aria-expanded:block" />
       </button>
     </div>
   </Container>
@@ -55,7 +56,7 @@ const linkClass =
         {
           nav.map(({ label, href }) => (
             <li>
-              <a href={href} aria-current={isActive(href) ? "page" : undefined} class:list={[linkClass, "block"]}>
+              <a href={href} aria-current={isActive(href) ? "page" : undefined} class:list={[linkClass, "flex min-h-11 items-center"]}>
                 {label}
               </a>
             </li>
@@ -69,10 +70,20 @@ const linkClass =
 <script>
   const button = document.getElementById("menu-button");
   const menu = document.getElementById("mobile-nav");
-  button?.addEventListener("click", () => {
-    const open = button.getAttribute("aria-expanded") === "true";
-    button.setAttribute("aria-expanded", String(!open));
-    button.setAttribute("aria-label", open ? "Open menu" : "Close menu");
-    menu?.classList.toggle("hidden", open);
+
+  const setOpen = (open: boolean) => {
+    button?.setAttribute("aria-expanded", String(open));
+    button?.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    menu?.classList.toggle("hidden", !open);
+  };
+
+  button?.addEventListener("click", () => setOpen(button.getAttribute("aria-expanded") !== "true"));
+
+  // Escape closes the menu and returns focus to the button.
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && button?.getAttribute("aria-expanded") === "true") {
+      setOpen(false);
+      button.focus();
+    }
   });
 </script>

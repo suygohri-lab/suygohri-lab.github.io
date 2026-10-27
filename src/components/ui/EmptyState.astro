@@ -1,0 +1,23 @@
+---
+import Card from "./Card.astro";
+import Icon, { type IconName } from "../Icon.astro";
+
+/** Friendly placeholder shown where a list has no items yet. */
+interface Props {
+  title: string;
+  message: string;
+  icon?: IconName;
+}
+
+const { title, message, icon = "pdf" } = Astro.props;
+---
+
+<Card class="flex max-w-2xl items-start gap-5" data-reveal>
+  <span class="grid size-12 shrink-0 place-items-center rounded-xl border-2 border-ink text-art-2" aria-hidden="true">
+    <Icon name={icon} class="size-5" />
+  </span>
+  <div>
+    <p class="text-lg font-semibold text-fg">{title}</p>
+    <p class="mt-1 text-base leading-relaxed text-muted">{message}</p>
+  </div>
+</Card>

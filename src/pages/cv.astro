@@ -13,6 +13,16 @@ import { awards, education, experience, service, skills, teaching } from "../dat
 
 // The download button only appears once public/cv.pdf exists.
 const hasPdf = existsSync(join(process.cwd(), "public", "cv.pdf"));
+
+// The last section shows only the groups that have entries, e.g. "Honors & skills".
+const extras = [
+  awards.length > 0 && "Honors",
+  service.length > 0 && "service",
+  skills.length > 0 && "skills",
+].filter((name): name is string => Boolean(name));
+const joined = extras.length === 1 ? extras[0] : `${extras.slice(0, -1).join(", ")} & ${extras.at(-1)}`;
+const extrasTitle = joined.charAt(0).toUpperCase() + joined.slice(1);
+const extraColumns: Record<number, string> = { 1: "max-w-2xl", 2: "md:grid-cols-2", 3: "md:grid-cols-3" };
 ---
 
 <BaseLayout title="CV" description={`Curriculum vitae of ${site.name}.`}>
@@ -34,44 +44,50 @@ const hasPdf = existsSync(join(process.cwd(), "public", "cv.pdf"));
   <CvSection title="Experience" entries={experience} />
   <CvSection title="Teaching" entries={teaching} />
 
-  <Section title="Honors, service & skills" class="border-t border-line">
-    <div class="grid gap-6 md:grid-cols-3">
-      <Card data-reveal>
-        <h3 class="text-lg">Honors &amp; awards</h3>
-        <ul class="mt-5 space-y-4">
-          {
-            awards.map(({ title, year }) => (
-              <li>
-                <p class="text-base leading-snug text-fg">{title}</p>
-                <p class="mt-0.5 text-sm text-muted tabular-nums">{year}</p>
-              </li>
-            ))
-          }
-        </ul>
-      </Card>
+  {
+    extras.length > 0 && (
+      <Section title={extrasTitle} class="border-t border-line">
+        <div class:list={["grid gap-6", extraColumns[extras.length]]}>
+          {awards.length > 0 && (
+            <Card data-reveal>
+              <h3 class="text-lg">Honors &amp; awards</h3>
+              <ul class="mt-5 space-y-4">
+                {awards.map(({ title, year }) => (
+                  <li>
+                    <p class="text-base leading-snug text-fg">{title}</p>
+                    <p class="mt-0.5 text-sm text-muted tabular-nums">{year}</p>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
 
-      <Card data-reveal>
-        <h3 class="text-lg">Service</h3>
-        <ul class="mt-5 space-y-3 text-base leading-relaxed">
-          {service.map((item) => <li>{item}</li>)}
-        </ul>
-      </Card>
+          {service.length > 0 && (
+            <Card data-reveal>
+              <h3 class="text-lg">Service</h3>
+              <ul class="mt-5 space-y-3 text-base leading-relaxed">
+                {service.map((item) => <li>{item}</li>)}
+              </ul>
+            </Card>
+          )}
 
-      <Card data-reveal>
-        <h3 class="text-lg">Skills</h3>
-        <dl class="mt-5 space-y-5">
-          {
-            skills.map(({ label, items }) => (
-              <div>
-                <dt class="text-sm font-semibold text-muted">{label}</dt>
-                <dd class="mt-2 flex flex-wrap gap-1.5">
-                  {items.map((item) => <span class="rounded-md border-2 border-ink px-2 py-0.5 text-sm font-semibold text-fg">{item}</span>)}
-                </dd>
-              </div>
-            ))
-          }
-        </dl>
-      </Card>
-    </div>
-  </Section>
+          {skills.length > 0 && (
+            <Card data-reveal>
+              <h3 class="text-lg">Skills</h3>
+              <dl class="mt-5 space-y-5">
+                {skills.map(({ label, items }) => (
+                  <div>
+                    <dt class="text-sm font-semibold text-muted">{label}</dt>
+                    <dd class="mt-2 flex flex-wrap gap-1.5">
+                      {items.map((item) => <span class="rounded-md border-2 border-ink px-2 py-0.5 text-sm font-semibold text-fg">{item}</span>)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </Card>
+          )}
+        </div>
+      </Section>
+    )
+  }
 </BaseLayout>

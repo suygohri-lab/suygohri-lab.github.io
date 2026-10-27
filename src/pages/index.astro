@@ -11,8 +11,10 @@ import TypedText from "../components/TypedText.astro";
 import Button from "../components/ui/Button.astro";
 import Card from "../components/ui/Card.astro";
 import Container from "../components/ui/Container.astro";
+import EmptyState from "../components/ui/EmptyState.astro";
 import Section from "../components/ui/Section.astro";
 import { site } from "../data/site";
+import { linkProps } from "../utils/links";
 import { projects } from "../data/projects";
 import { getPublications } from "../utils/publications";
 
@@ -43,7 +45,7 @@ const formatNewsDate = (ym: string) =>
         }
         <p class="speech-bubble inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-fg">
           <span class="relative flex size-2">
-            <span class="absolute inline-flex size-full animate-ping rounded-full bg-art-2 opacity-60 motion-reduce:animate-none"></span>
+            <span class="absolute inline-flex size-full animate-ping rounded-full bg-art-2 opacity-60 [animation-iteration-count:3] motion-reduce:animate-none"></span>
             <span class="relative inline-flex size-2 rounded-full bg-art-2"></span>
           </span>
           {site.title}
@@ -53,14 +55,14 @@ const formatNewsDate = (ym: string) =>
 
         <p class="mt-4 text-lg text-muted">
           {site.affiliation.department},{" "}
-          <a class="link" href={site.affiliation.url} target="_blank" rel="noopener noreferrer">
+          <a class="link" href={site.affiliation.url} {...linkProps(site.affiliation.url)}>
             {site.affiliation.university}
           </a>
         </p>
         <p class="mt-1 text-base text-muted">
-          <a class="link" href={site.lab.url} target="_blank" rel="noopener noreferrer">{site.lab.name}</a>
+          <a class="link" href={site.lab.url} {...linkProps(site.lab.url)}>{site.lab.name}</a>
           {" "}&middot; Advised by{" "}
-          <a class="link" href={site.advisor.url} target="_blank" rel="noopener noreferrer">{site.advisor.name}</a>
+          <a class="link" href={site.advisor.url} {...linkProps(site.advisor.url)}>{site.advisor.name}</a>
         </p>
 
         <div class="prose-block mt-8 space-y-4">
@@ -104,7 +106,13 @@ const formatNewsDate = (ym: string) =>
     <a slot="action" href="/publications/" class="text-action">
       All publications <Icon name="arrow" class="size-4" />
     </a>
-    <PublicationList publications={selected} />
+    {
+      selected.length > 0 ? (
+        <PublicationList publications={selected} />
+      ) : (
+        <EmptyState title="Papers coming soon" message="My first publications are in progress. They will appear here once they are out." />
+      )
+    }
   </Section>
 
   <!-- News -->

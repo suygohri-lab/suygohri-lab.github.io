@@ -2,12 +2,14 @@
 import Icon from "./Icon.astro";
 ---
 
+<!-- aria-pressed tells screen readers whether dark mode is currently on. -->
 <button
   type="button"
   data-theme-toggle
-  aria-label="Toggle dark mode"
+  aria-label="Dark mode"
+  aria-pressed="false"
   title="Toggle dark mode"
-  class="grid size-9 place-items-center rounded-lg text-muted transition-all duration-200 ease-in-out hover:bg-surface hover:text-fg"
+  class="grid size-11 place-items-center rounded-lg text-muted transition-all duration-200 ease-in-out hover:bg-surface hover:text-fg"
 >
   <Icon name="moon" class="size-[18px] dark:hidden" />
   <Icon name="sun" class="hidden size-[18px] dark:block" />
@@ -16,12 +18,17 @@ import Icon from "./Icon.astro";
 <script>
   // The initial theme is applied by the inline script in BaseLayout's <head>
   // to avoid a flash of the wrong theme; this only handles user toggles.
+  const isDark = () => document.documentElement.classList.contains("dark");
+
   for (const button of document.querySelectorAll("[data-theme-toggle]")) {
+    const sync = () => button.setAttribute("aria-pressed", String(isDark()));
+    sync();
     button.addEventListener("click", () => {
-      const isDark = document.documentElement.classList.toggle("dark");
+      const dark = document.documentElement.classList.toggle("dark");
       try {
-        localStorage.setItem("theme", isDark ? "dark" : "light");
+        localStorage.setItem("theme", dark ? "dark" : "light");
       } catch {}
+      sync();
     });
   }
 </script>

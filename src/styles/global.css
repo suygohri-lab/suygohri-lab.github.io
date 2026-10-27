@@ -80,6 +80,12 @@
 /*
  * JetBrains Mono 2.304, self-hosted from public/fonts (SIL Open Font License,
  * see public/fonts/JetBrainsMono-OFL.txt). Used for all text on the site.
+ *
+ * The files are trimmed to the characters a research site needs: Latin, Latin
+ * Extended-A, Greek, punctuation, super/subscripts, letterlike symbols, arrows, math
+ * operators and the angle brackets used in quantum notation (157 KB for all five
+ * weights instead of 459 KB). Coding ligatures (e.g. "->" drawn as an arrow) were
+ * dropped, so prose shows exactly what was typed. Other characters use the fallback.
  */
 @font-face {
   font-family: "JetBrains Mono";
@@ -87,6 +93,7 @@
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0000-017F, U+0370-03FF, U+2000-209F, U+20AC, U+2100-22FF, U+27E8-27E9;
 }
 @font-face {
   font-family: "JetBrains Mono";
@@ -94,6 +101,7 @@
   font-weight: 400;
   font-style: italic;
   font-display: swap;
+  unicode-range: U+0000-017F, U+0370-03FF, U+2000-209F, U+20AC, U+2100-22FF, U+27E8-27E9;
 }
 @font-face {
   font-family: "JetBrains Mono";
@@ -101,6 +109,7 @@
   font-weight: 500;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0000-017F, U+0370-03FF, U+2000-209F, U+20AC, U+2100-22FF, U+27E8-27E9;
 }
 @font-face {
   font-family: "JetBrains Mono";
@@ -108,6 +117,7 @@
   font-weight: 600;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0000-017F, U+0370-03FF, U+2000-209F, U+20AC, U+2100-22FF, U+27E8-27E9;
 }
 @font-face {
   font-family: "JetBrains Mono";
@@ -115,16 +125,50 @@
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0000-017F, U+0370-03FF, U+2000-209F, U+20AC, U+2100-22FF, U+27E8-27E9;
+}
+
+/*
+ * Local fonts resized to JetBrains Mono's metrics (1000 units/em, ascent 1020,
+ * descent 300, every character 600 wide). Text shown before the web font loads then
+ * takes the same space, so nothing jumps when it swaps in.
+ */
+@font-face {
+  font-family: "JetBrains Mono Fallback Menlo"; /* macOS / iOS: 0.602em wide */
+  src: local("Menlo");
+  size-adjust: 99.7%;
+  ascent-override: 102.3%;
+  descent-override: 30.1%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "JetBrains Mono Fallback Consolas"; /* Windows: 0.550em wide */
+  src: local("Consolas");
+  size-adjust: 109.1%;
+  ascent-override: 93.5%;
+  descent-override: 27.5%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "JetBrains Mono Fallback Courier"; /* Android / Linux: 0.600em wide */
+  src: local("Courier New"), local("Cousine"), local("Liberation Mono");
+  size-adjust: 100%;
+  ascent-override: 102%;
+  descent-override: 30%;
+  line-gap-override: 0%;
 }
 
 @theme {
-  --font-sans: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans: "JetBrains Mono", "JetBrains Mono Fallback Menlo", "JetBrains Mono Fallback Consolas",
+    "JetBrains Mono Fallback Courier", ui-monospace, monospace;
+  --font-mono: "JetBrains Mono", "JetBrains Mono Fallback Menlo", "JetBrains Mono Fallback Consolas",
+    "JetBrains Mono Fallback Courier", ui-monospace, monospace;
 }
 
 @layer base {
   html {
-    @apply scroll-smooth antialiased;
+    /* Smooth scrolling only for visitors who have not asked for reduced motion. */
+    @apply antialiased motion-safe:scroll-smooth;
     color-scheme: light;
   }
   html.dark {
@@ -147,6 +191,10 @@
   }
   :focus-visible {
     @apply rounded-md outline-2 outline-offset-2 outline-accent;
+  }
+  /* "#" placeholder links that are not filled in yet. */
+  a[aria-disabled="true"] {
+    cursor: not-allowed;
   }
 }
 
@@ -192,7 +240,7 @@ html.js [data-reveal].revealed {
   }
   /* Standalone text link ("All publications ->"). */
   .text-action {
-    @apply inline-flex items-center gap-1.5 text-sm font-semibold text-link transition-all duration-200 ease-in-out hover:gap-2.5 hover:text-link-hover;
+    @apply inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-link transition-all duration-200 ease-in-out hover:gap-2.5 hover:text-link-hover;
   }
   /* Neutral pill for tags and metadata. */
   .chip {
@@ -210,18 +258,23 @@ html.js [data-reveal].revealed {
   .comic-panel-interactive {
     @apply transition-all duration-200 ease-in-out;
   }
-  .comic-panel-interactive:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 7px 7px 0 var(--ink);
+  /* Hover effects only on devices with a real pointer: on touch screens they would stick after a tap. */
+  @media (hover: hover) {
+    .comic-panel-interactive:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 7px 7px 0 var(--ink);
+    }
   }
   /* Buttons "pop" on hover and press flat when clicked. */
   .comic-button {
     @apply border-2 border-ink transition-all duration-200 ease-in-out;
     box-shadow: 3px 3px 0 var(--ink);
   }
-  .comic-button:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 var(--ink);
+  @media (hover: hover) {
+    .comic-button:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0 var(--ink);
+    }
   }
   .comic-button:active {
     transform: translate(2px, 2px);

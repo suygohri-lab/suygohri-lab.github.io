@@ -2,6 +2,7 @@
 import Icon from "./Icon.astro";
 import Card from "./ui/Card.astro";
 import type { Project } from "../data/projects";
+import { linkProps } from "../utils/links";
 
 interface Props {
   project: Project;
@@ -42,7 +43,7 @@ const { title, summary, status, tags, icon, image, imageAlt, link } = project;
     </ul>
     {
       link && (
-        <a href={link.url} class="text-action mt-6" target="_blank" rel="noopener noreferrer">
+        <a href={link.url} class="text-action mt-6" {...linkProps(link.url)}>
           {link.label} <Icon name="arrow" class="size-4" />
         </a>
       )

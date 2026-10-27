@@ -1,4 +1,5 @@
 ---
+import Icon from "../Icon.astro";
 import { project, sphereCurve, stateFrame, THETA, VIEW } from "../../utils/bloch";
 
 interface Props {
@@ -67,6 +68,20 @@ const trail = Array.from({ length: TRAIL }, (_, i) => stateFrame(THETA, PHI0 - (
       <circle cx={s.origin[0]} cy={s.origin[1]} r="2" fill="var(--muted)" />
     </g>
   </svg>
+
+  <!-- Moving content that runs longer than 5 seconds needs a pause control (WCAG 2.2.2).
+       Hidden until the script runs, since without JavaScript nothing moves. -->
+  <button
+    type="button"
+    data-bloch-pause
+    aria-pressed="false"
+    hidden
+    class="comic-button group mx-auto mt-3 flex min-h-11 items-center gap-2 rounded-lg bg-card px-3.5 text-sm font-semibold text-fg hover:text-link"
+  >
+    <Icon name="pause" class="size-4 group-aria-pressed:hidden" />
+    <Icon name="play" class="hidden size-4 group-aria-pressed:block" />
+    Pause animation
+  </button>
 </figure>
 
 <style>
@@ -83,6 +98,9 @@ const trail = Array.from({ length: TRAIL }, (_, i) => stateFrame(THETA, PHI0 - (
     .bloch-orbit {
       animation-duration: 6s;
     }
+  }
+  .is-paused .bloch-orbit {
+    animation-play-state: paused;
   }
 </style>
 
@@ -113,10 +131,9 @@ const trail = Array.from({ length: TRAIL }, (_, i) => stateFrame(THETA, PHI0 - (
 
     let cycle = -1;
     let target = 0;
-    const start = performance.now();
 
-    const draw = (now: number) => {
-      const t = (now - start) / 1000;
+    /** Draws the state at `t` seconds of animation time. */
+    const draw = (t: number) => {
       const n = Math.floor(t / CYCLE);
       if (n !== cycle) {
         cycle = n;
@@ -154,17 +171,54 @@ const trail = Array.from({ length: TRAIL }, (_, i) => stateFrame(THETA, PHI0 - (
       }
     };
 
+    // Animation clock: advances only while the sphere is on screen and not paused, so
+    // pausing or scrolling away freezes the motion instead of skipping ahead.
+    const FRAME_MS = 1000 / 30; // 30 fps is plenty for a slow rotation and halves the work
+    let clock = 0;
+    let lastTick: number | null = null;
+    let lastDraw = -Infinity;
+    let visible = false;
+    let paused = false;
+    let running = false;
+
+    const loop = (now: number) => {
+      if (!visible || paused) {
+        running = false;
+        lastTick = null;
+        return;
+      }
+      if (lastTick !== null) clock += Math.min(now - lastTick, 100) / 1000;
+      lastTick = now;
+      // A few ms of slack: two 60 Hz frames (33.3 ms) must count as one 30 fps step.
+      if (now - lastDraw >= FRAME_MS - 4) {
+        lastDraw = now;
+        draw(clock);
+      }
+      requestAnimationFrame(loop);
+    };
+    const start = () => {
+      if (running || !visible || paused) return;
+      running = true;
+      requestAnimationFrame(loop);
+    };
+
     // Only animate while the sphere is on screen. Watch the <figure> (an HTML element):
     // Safari on iPhone does not reliably report visibility for SVG shapes.
-    let visible = false;
-    const loop = (now: number) => {
-      draw(now);
-      if (visible) requestAnimationFrame(loop);
-    };
+    const figure = group.closest("figure");
     new IntersectionObserver(([entry]) => {
-      const wasVisible = visible;
       visible = entry.isIntersecting;
-      if (visible && !wasVisible) requestAnimationFrame(loop);
-    }).observe(group.closest("figure") ?? group);
+      start();
+    }).observe(figure ?? group);
+
+    const pauseButton = figure?.querySelector<HTMLButtonElement>("[data-bloch-pause]");
+    if (pauseButton) {
+      pauseButton.hidden = false;
+      pauseButton.addEventListener("click", () => {
+        paused = !paused;
+        pauseButton.setAttribute("aria-pressed", String(paused));
+        figure?.classList.toggle("is-paused", paused);
+        start();
+      });
+    }
   }
 </script>

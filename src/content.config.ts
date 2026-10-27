@@ -22,9 +22,9 @@ const publications = defineCollection({
     type: z
       .enum(["conference", "journal", "workshop", "preprint", "thesis"])
       .default("conference"),
-    /** Link to the PDF: an external URL or a file in `public/papers/`. */
+    /** Link to the PDF: a URL, a file in `public/papers/`, or "#" as a placeholder. */
     pdf: z.string().optional(),
-    /** Link to the code repository. */
+    /** Link to the code repository, or "#" as a placeholder. */
     code: z.string().optional(),
     /** Any extra links (project page, slides, video, ...). */
     links: z.array(z.object({ label: z.string(), url: z.string() })).default([]),

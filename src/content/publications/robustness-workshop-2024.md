@@ -6,7 +6,7 @@ venueShort: "ICLR-W"
 year: 2024
 month: 5
 type: workshop
-pdf: "https://arxiv.org/abs/0000.00002"
+pdf: "#"
 bibtex: |
   @inproceedings{name2024robustness,
     title     = {On the Robustness of Quantized Language Models},
@@ -14,4 +14,5 @@ bibtex: |
     booktitle = {ICLR Workshop on Reliable and Responsible Foundation Models},
     year      = {2024}
   }
+draft: true # sample paper: a template to copy, not shown on the site
 ---
