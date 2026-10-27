@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Code Typing Animation</title>
+
+    <!-- JetBrains Mono from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="stage">
+      <figure class="ide" data-code-typing>
+        <!-- Window chrome: traffic lights + file tab -->
+        <div class="ide__titlebar">
+          <span class="ide__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="ide__tab">
+            <span class="ide__file-icon" aria-hidden="true"></span>
+            QuickSort.kt
+          </span>
+          <button type="button" class="ide__replay" data-replay aria-label="Replay animation" title="Replay">↻</button>
+        </div>
+
+        <!-- Editor: line-number gutter + code -->
+        <div class="ide__editor">
+          <span class="ide__gutter" aria-hidden="true">1</span>
+          <pre class="ide__code"><code><span class="sr-only">fun &lt;T : Comparable&lt;T&gt;&gt; List&lt;T&gt;.quickSort(): List&lt;T&gt; = when {</span><span data-output aria-hidden="true"></span><span class="ide__caret" data-caret aria-hidden="true"></span></code></pre>
+        </div>
+      </figure>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

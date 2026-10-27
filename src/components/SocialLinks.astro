@@ -15,10 +15,11 @@ const links: { label: string; href: string; icon: IconName }[] = [
   { label: "Email", href: `mailto:${site.email}`, icon: "mail" },
 ];
 
+const box = size === "sm" ? "size-9 rounded-lg" : "size-11 rounded-xl";
 const icon = size === "sm" ? "size-4" : "size-[18px]";
 ---
 
-<ul class:list={["flex items-center", size === "sm" ? "gap-4" : "gap-5"]}>
+<ul class="flex items-center gap-2">
   {
     links.map(({ label, href, icon: name }) => (
       <li>
@@ -28,7 +29,10 @@ const icon = size === "sm" ? "size-4" : "size-[18px]";
           title={label}
           target={href.startsWith("mailto:") ? undefined : "_blank"}
           rel="noopener noreferrer"
-          class="block text-accent transition-colors hover:text-accent-hover"
+          class:list={[
+            box,
+            "comic-button grid place-items-center bg-card text-fg hover:text-link",
+          ]}
         >
           <Icon name={name} class={icon} />
         </a>

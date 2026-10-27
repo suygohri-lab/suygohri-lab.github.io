@@ -1,0 +1,183 @@
+/* Dark IDE palette (IntelliJ-style "Dark" theme). */
+:root {
+  --ide-bg: #1e1f22;
+  --ide-chrome: #2b2d30;
+  --ide-border: #393b40;
+  --ide-text: #bcbec4;
+  --ide-gutter: #4b5059;
+  --ide-caret: #ced0d6;
+
+  /* Syntax colors */
+  --tok-keyword: #cf8e6d;
+  --tok-type: #bcbec4;
+  --tok-type-param: #16baac;
+  --tok-function: #56a8f5;
+  --tok-punct: #bcbec4;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #f8fafc;
+  font-family: system-ui, sans-serif;
+}
+
+.stage {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 24px 16px;
+}
+
+/* ---------- Window ---------- */
+.ide {
+  width: min(100%, 760px);
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--ide-border);
+  border-radius: 12px;
+  background: var(--ide-bg);
+  box-shadow: 0 10px 30px -12px rgb(15 23 42 / 0.35);
+}
+
+.ide__titlebar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 40px;
+  padding: 0 12px 0 16px;
+  border-bottom: 1px solid var(--ide-border);
+  background: var(--ide-chrome);
+}
+
+.ide__dots {
+  display: flex;
+  gap: 8px;
+}
+.ide__dots i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+.ide__dots i:nth-child(2) {
+  background: #febc2e;
+}
+.ide__dots i:nth-child(3) {
+  background: #28c840;
+}
+
+.ide__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  padding: 0 4px;
+  border-bottom: 2px solid #3574f0;
+  color: var(--ide-text);
+  font: 500 13px/1 "JetBrains Mono", ui-monospace, monospace;
+}
+
+.ide__file-icon {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, #e44857 0%, #c711e1 50%, #7f52ff 100%);
+}
+
+.ide__replay {
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ide-gutter);
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+}
+.ide__replay:hover {
+  background: var(--ide-border);
+  color: var(--ide-text);
+}
+.ide__replay:focus-visible {
+  outline: 2px solid #3574f0;
+  outline-offset: 2px;
+}
+
+/* ---------- Editor ---------- */
+.ide__editor {
+  display: flex;
+  gap: 20px;
+  padding: 28px 24px 32px 0;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: clamp(13px, 2.2vw, 16px);
+  line-height: 1.7;
+}
+
+.ide__gutter {
+  flex: none;
+  width: 48px;
+  text-align: right;
+  color: var(--ide-gutter);
+  user-select: none;
+}
+
+.ide__code {
+  flex: 1;
+  margin: 0;
+  overflow-x: auto;
+  color: var(--ide-text);
+  font: inherit;
+  white-space: pre;
+}
+
+.tok-keyword { color: var(--tok-keyword); }
+.tok-type { color: var(--tok-type); }
+.tok-type-param { color: var(--tok-type-param); }
+.tok-function { color: var(--tok-function); }
+.tok-punct { color: var(--tok-punct); }
+
+/* ---------- Caret ---------- */
+.ide__caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.25em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  background: var(--ide-caret);
+  animation: caret-blink 1s step-end infinite;
+}
+
+/* Like a real editor, the caret stays solid while characters are being typed. */
+.ide.is-typing .ide__caret {
+  animation: none;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ide__caret {
+    animation: none;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

@@ -1,6 +1,7 @@
 ---
 import Icon from "./Icon.astro";
 import ThemeToggle from "./ThemeToggle.astro";
+import Container from "./ui/Container.astro";
 import { nav, site } from "../data/site";
 
 const strip = (path: string) => path.replace(/\/+$/, "") || "/";
@@ -9,18 +10,18 @@ const isActive = (href: string) =>
   href === "/" ? current === "/" : current === strip(href) || current.startsWith(strip(href) + "/");
 
 const linkClass =
-  "text-sm text-muted transition-colors hover:text-fg aria-[current=page]:text-accent aria-[current=page]:font-medium";
+  "rounded-lg px-3 py-2 text-sm font-medium text-muted transition-all duration-200 ease-in-out hover:bg-surface hover:text-fg aria-[current=page]:text-link";
 ---
 
-<header class="sticky top-0 z-40 bg-bg/85 backdrop-blur-md">
-  <div class="container-page flex h-16 items-center justify-between gap-4">
-    <a href="/" class="text-[15px] font-semibold tracking-tight text-fg">
+<header class="sticky top-0 z-40 border-b-2 border-ink bg-bg/90 backdrop-blur-md">
+  <Container class="flex h-16 items-center justify-between gap-4">
+    <a href="/" class="text-base font-bold tracking-tight text-fg transition-all duration-200 ease-in-out hover:text-link">
       {site.name}
     </a>
 
-    <div class="flex items-center gap-6">
+    <div class="flex items-center gap-1">
       <nav aria-label="Main" class="hidden sm:block">
-        <ul class="flex items-center gap-7">
+        <ul class="flex items-center gap-1">
           {
             nav.map(({ label, href }) => (
               <li>
@@ -41,25 +42,27 @@ const linkClass =
         aria-label="Open menu"
         aria-expanded="false"
         aria-controls="mobile-nav"
-        class="-mr-1 grid size-8 place-items-center text-muted transition-colors hover:text-fg sm:hidden"
+        class="grid size-9 place-items-center rounded-lg text-muted transition-all duration-200 ease-in-out hover:bg-surface hover:text-fg sm:hidden"
       >
         <Icon name="menu" class="size-5" />
       </button>
     </div>
-  </div>
+  </Container>
 
-  <nav id="mobile-nav" aria-label="Main" class="hidden sm:hidden">
-    <ul class="container-page flex flex-col gap-1 pb-4">
-      {
-        nav.map(({ label, href }) => (
-          <li>
-            <a href={href} aria-current={isActive(href) ? "page" : undefined} class:list={[linkClass, "block py-2"]}>
-              {label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+  <nav id="mobile-nav" aria-label="Main" class="hidden border-t border-line/70 sm:hidden">
+    <Container>
+      <ul class="flex flex-col gap-1 py-3">
+        {
+          nav.map(({ label, href }) => (
+            <li>
+              <a href={href} aria-current={isActive(href) ? "page" : undefined} class:list={[linkClass, "block"]}>
+                {label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </Container>
   </nav>
 </header>
 

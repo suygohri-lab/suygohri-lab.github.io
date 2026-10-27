@@ -4,41 +4,77 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Semantic color tokens. Components use these (bg-bg, text-fg, text-accent, ...)
- * instead of raw palette colors, so each theme is defined in exactly one place.
+ * Semantic color tokens, 60 / 30 / 10:
+ *   60% background (--bg, with --card surfaces on top)
+ *   30% text and structure (--fg, --text, --muted, --line)
+ *   10% one accent (--accent fills primary buttons, --link colors links)
  * Contrast ratios are against --bg (WCAG AA needs 4.5:1 for body text).
  */
 :root {
-  --bg: #ffffff;
-  --fg: #0f172a; /* slate-900, headings: 17.9:1 */
-  --text: #334155; /* slate-700, body: 10.4:1 */
-  --muted: #64748b; /* slate-500, metadata: 4.8:1 */
+  --bg: #f8fafc; /* slate-50 */
+  --card: #f8fafc; /* cards match the page; ink outlines separate them */
+  --fg: #0f172a; /* slate-900, headings: 17.1:1 */
+  --text: #334155; /* slate-700, body: 9.9:1 */
+  --muted: #475569; /* slate-600, metadata: 7.2:1 */
   --line: #e2e8f0; /* slate-200 */
-  --surface: #f8fafc; /* slate-50, code blocks */
-  --accent: #0f766e; /* teal-700: 5.5:1 (teal-600 is only 3.7:1, below AA for text) */
-  --accent-hover: #115e59; /* teal-800 */
+  --surface: #f1f5f9; /* slate-100, chips, code blocks, image placeholders */
+  --highlight: #b2ffff; /* text selection */
+  --accent: #1974d2; /* palette blue: primary button fill (white text 4.7:1) */
+  --accent-hover: #00308f; /* palette navy */
+  --on-accent: #ffffff;
+  --link: #1565c0; /* palette blue one shade deeper: 5.4:1 on slate-50 (#1974d2 is 4.4:1) */
+  --link-hover: #00308f; /* palette navy: 11.2:1 */
+  --ink: #0f172a; /* comic outlines and hard shadows */
+
+  /* Illustration colors (figures only, never body text), darkest first. */
+  --art-1: #00308f;
+  --art-2: #1974d2;
+  --art-3: #8edfff;
+  --art-4: #b2ffff;
 }
 
 .dark {
-  --bg: #131518; /* deep charcoal, not pitch black */
-  --fg: #f1f5f9; /* slate-100: 16.6:1 */
-  --text: #cbd5e1; /* slate-300: 12.4:1 */
-  --muted: #94a3b8; /* slate-400: 7.2:1 */
-  --line: #262a30;
-  --surface: #1b1e22;
-  --accent: #2dd4bf; /* teal-400: 9.9:1 */
-  --accent-hover: #5eead4; /* teal-300 */
+  --bg: #000000; /* black */
+  --card: #000000; /* cards match the page; outlines separate them */
+  --fg: #f5f5f5; /* neutral-100: 19.3:1 */
+  --text: #d4d4d4; /* neutral-300: 14.0:1 */
+  --muted: #a3a3a3; /* neutral-400: 8.5:1 */
+  --line: #262626; /* neutral-800 */
+  --surface: #171717; /* neutral-900 */
+  --highlight: #00308f;
+  --accent: #8edfff; /* palette sky */
+  --accent-hover: #b2ffff;
+  --on-accent: #000000; /* 14.6:1 on the sky fill */
+  --link: #8edfff; /* 14.6:1 */
+  --link-hover: #b2ffff; /* 18.3:1 */
+  --ink: #e5e5e5; /* light ink so outlines read on black */
+
+  /* Same palette, reversed so the most prominent strokes stay brightest. */
+  --art-1: #b2ffff;
+  --art-2: #8edfff;
+  --art-3: #1974d2;
+  --art-4: #00308f;
 }
 
 @theme inline {
   --color-bg: var(--bg);
+  --color-card: var(--card);
   --color-fg: var(--fg);
   --color-text: var(--text);
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-surface: var(--surface);
+  --color-highlight: var(--highlight);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
+  --color-on-accent: var(--on-accent);
+  --color-link: var(--link);
+  --color-link-hover: var(--link-hover);
+  --color-ink: var(--ink);
+  --color-art-1: var(--art-1);
+  --color-art-2: var(--art-2);
+  --color-art-3: var(--art-3);
+  --color-art-4: var(--art-4);
 }
 
 @theme {
@@ -56,33 +92,123 @@
     color-scheme: dark;
   }
   body {
-    @apply bg-bg font-sans text-[15px] leading-relaxed text-text sm:text-base;
+    @apply bg-bg font-sans text-base leading-relaxed text-text;
   }
-  h1, h2, h3 {
+  h1 {
+    @apply text-4xl font-bold tracking-tight text-fg md:text-5xl;
+  }
+  h2 {
+    @apply text-2xl font-semibold tracking-tight text-fg md:text-3xl;
+  }
+  h3 {
     @apply font-semibold tracking-tight text-fg;
   }
   ::selection {
-    @apply bg-accent/20 text-fg;
+    @apply bg-highlight text-fg;
   }
   :focus-visible {
-    @apply rounded-sm outline-2 outline-offset-2 outline-accent;
+    @apply rounded-md outline-2 outline-offset-2 outline-accent;
+  }
+}
+
+/*
+ * Scroll reveal: [data-reveal] elements fade up as they enter the viewport.
+ * Hidden only when JS runs (html.js is set in <head>); BaseLayout adds .revealed.
+ */
+html.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+html.js [data-reveal].revealed {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 
 @layer components {
   .container-page {
-    @apply mx-auto w-full max-w-3xl px-4 sm:px-6;
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
   }
-  /* Small uppercase label that heads each section. */
-  .section-label {
-    @apply mb-8 font-mono text-xs font-medium tracking-[0.18em] text-muted uppercase;
+  /* Long-form text: comfortable size, line height and measure. */
+  .prose-block {
+    @apply max-w-2xl text-base leading-relaxed md:text-lg;
+  }
+  /* Small label above a heading. */
+  .eyebrow {
+    @apply text-sm font-semibold tracking-wide text-link;
   }
   /* Inline link inside prose: underlined so it never relies on color alone. */
   .link {
-    @apply text-accent underline decoration-accent/40 decoration-1 underline-offset-4 transition-colors hover:text-accent-hover hover:decoration-accent-hover;
+    @apply text-link underline decoration-link/40 decoration-1 underline-offset-4 transition-all duration-200 ease-in-out hover:text-link-hover hover:decoration-link-hover;
   }
-  /* Compact text action (PDF, Code, BibTeX, View CV, ...). */
-  .action {
-    @apply inline-flex items-center gap-1.5 font-mono text-xs font-medium tracking-wider text-accent uppercase transition-colors hover:text-accent-hover;
+  /* Standalone text link ("All publications ->"). */
+  .text-action {
+    @apply inline-flex items-center gap-1.5 text-sm font-semibold text-link transition-all duration-200 ease-in-out hover:gap-2.5 hover:text-link-hover;
+  }
+  /* Neutral pill for tags and metadata. */
+  .chip {
+    @apply inline-flex items-center rounded-full border-2 border-ink bg-card px-3 py-0.5 text-sm font-semibold text-fg;
+  }
+
+  /*
+   * Comic style. Every card, button and badge uses the same ink outline and a hard,
+   * offset shadow (no blur), so panels separate from the page without a different fill.
+   */
+  .comic-panel {
+    @apply rounded-2xl border-2 border-ink bg-card;
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+  .comic-panel-interactive {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  .comic-panel-interactive:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 7px 7px 0 var(--ink);
+  }
+  /* Buttons "pop" on hover and press flat when clicked. */
+  .comic-button {
+    @apply border-2 border-ink transition-all duration-200 ease-in-out;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .comic-button:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+  .comic-button:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  /* Speech bubble with a tail on the lower left. */
+  .speech-bubble {
+    @apply relative rounded-2xl border-2 border-ink bg-card;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .speech-bubble::after {
+    content: "";
+    @apply absolute -bottom-[9px] left-6 size-4 rotate-45 border-r-2 border-b-2 border-ink bg-card;
+  }
+
+  /* Comic halftone dots behind a figure, fading out toward the edges. */
+  .halftone {
+    @apply relative isolate;
+  }
+  .halftone::before {
+    content: "";
+    @apply absolute inset-0 -z-10;
+    background-image: radial-gradient(var(--art-2) 1.2px, transparent 1.6px);
+    background-size: 12px 12px;
+    background-position: center;
+    opacity: 0.35;
+    mask-image: radial-gradient(closest-side, black 30%, transparent);
   }
 }

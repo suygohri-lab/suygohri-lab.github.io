@@ -1,6 +1,10 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Icon from "../components/Icon.astro";
 import PublicationList from "../components/PublicationList.astro";
+import Button from "../components/ui/Button.astro";
+import Container from "../components/ui/Container.astro";
+import PageHeader from "../components/ui/PageHeader.astro";
 import { site } from "../data/site";
 import { getPublications, groupByYear } from "../utils/publications";
 
@@ -9,25 +13,28 @@ const byYear = groupByYear(publications);
 ---
 
 <BaseLayout title="Publications" description={`Publications by ${site.name}.`}>
-  <header class="mb-16">
-    <h1 class="text-3xl tracking-[-0.03em] sm:text-4xl">Publications</h1>
-    <p class="mt-4 max-w-xl text-sm leading-relaxed text-muted">
-      {publications.length} papers. <strong class="font-semibold text-fg">Bold</strong> marks my name;
-      * denotes equal contribution. Full list on{" "}
-      <a class="link" href={site.socials.scholar} target="_blank" rel="noopener noreferrer">Google Scholar</a>.
-    </p>
-  </header>
+  <PageHeader
+    eyebrow={`${publications.length} papers`}
+    title="Publications"
+    description="My name is shown in <strong class='font-semibold text-fg'>bold</strong>; * marks equal contribution."
+  >
+    <Button href={site.socials.scholar} variant="secondary" external>
+      <Icon name="scholar" class="size-4" /> Google Scholar
+    </Button>
+  </PageHeader>
 
-  <div class="space-y-20">
-    {
-      byYear.map(([year, pubs]) => (
-        <section aria-labelledby={`year-${year}`}>
-          <h2 id={`year-${year}`} class="section-label">
-            {year}
-          </h2>
-          <PublicationList publications={pubs} />
-        </section>
-      ))
-    }
-  </div>
+  <section aria-label="Papers by year" class="pb-24 md:pb-32">
+    <Container class="space-y-16 md:space-y-20">
+      {
+        byYear.map(([year, pubs]) => (
+          <section aria-labelledby={`year-${year}`}>
+            <h2 id={`year-${year}`} class="mb-8 tabular-nums" data-reveal>
+              {year}
+            </h2>
+            <PublicationList publications={pubs} />
+          </section>
+        ))
+      }
+    </Container>
+  </section>
 </BaseLayout>

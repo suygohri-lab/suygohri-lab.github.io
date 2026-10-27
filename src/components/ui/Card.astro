@@ -1,0 +1,28 @@
+---
+/**
+ * Comic panel for grouped content: same fill as the page, ink outline, hard offset shadow.
+ * Every card on the site uses this, so they all look identical.
+ * `interactive` adds a small "pop" on hover for cards that contain links.
+ */
+interface Props {
+  as?: "article" | "div" | "li";
+  interactive?: boolean;
+  padded?: boolean;
+  class?: string;
+  [key: `data-${string}`]: unknown;
+}
+
+const { as: Tag = "div", interactive = false, padded = true, class: className, ...rest } = Astro.props;
+---
+
+<Tag
+  class:list={[
+    "comic-panel",
+    padded && "p-6 md:p-8",
+    interactive && "comic-panel-interactive",
+    className,
+  ]}
+  {...rest}
+>
+  <slot />
+</Tag>

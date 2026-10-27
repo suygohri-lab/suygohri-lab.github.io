@@ -1,0 +1,23 @@
+---
+import Container from "./Container.astro";
+
+/** Top-of-page title block for inner pages. Slot: actions under the description. */
+interface Props {
+  title: string;
+  eyebrow?: string;
+  description?: string;
+}
+
+const { title, eyebrow, description } = Astro.props;
+---
+
+<header class="pt-24 pb-12 md:pt-32 md:pb-16">
+  <Container>
+    <div class="max-w-2xl" data-reveal>
+      {eyebrow && <p class="eyebrow mb-3">{eyebrow}</p>}
+      <h1>{title}</h1>
+      {description && <p class="mt-6 text-base leading-relaxed text-muted md:text-lg"><Fragment set:html={description} /></p>}
+      {Astro.slots.has("default") && <div class="mt-8 flex flex-wrap gap-4"><slot /></div>}
+    </div>
+  </Container>
+</header>

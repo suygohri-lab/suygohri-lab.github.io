@@ -1,15 +1,16 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Icon from "../components/Icon.astro";
+import Button from "../components/ui/Button.astro";
+import PageHeader from "../components/ui/PageHeader.astro";
 ---
 
 <BaseLayout title="Page not found">
-  <div class="py-16">
-    <p class="font-mono text-xs font-medium tracking-[0.18em] text-muted uppercase">Error 404</p>
-    <h1 class="mt-4 text-3xl tracking-[-0.03em] sm:text-4xl">Page not found</h1>
-    <p class="mt-4 text-muted">The page you are looking for does not exist or has moved.</p>
-    <a href="/" class="action mt-10">
-      Back to home <Icon name="arrow" class="size-3.5" />
-    </a>
+  <div class="pb-24 md:pb-32">
+    <PageHeader eyebrow="Error 404" title="Page not found" description="The page you are looking for does not exist or has moved.">
+      <Button href="/">
+        Back to home <Icon name="arrow" class="size-4" />
+      </Button>
+    </PageHeader>
   </div>
 </BaseLayout>

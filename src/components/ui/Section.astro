@@ -1,0 +1,37 @@
+---
+import Container from "./Container.astro";
+
+/**
+ * Page section with generous vertical rhythm and an optional heading block.
+ * Slots: default (content), "action" (link aligned with the heading, e.g. "View all").
+ */
+interface Props {
+  id?: string;
+  title?: string;
+  eyebrow?: string;
+  description?: string;
+  class?: string;
+}
+
+const { id, title, eyebrow, description, class: className } = Astro.props;
+const headingId = id ? `${id}-title` : undefined;
+const hasHeader = Boolean(title || eyebrow || description);
+---
+
+<section id={id} aria-labelledby={title ? headingId : undefined} class:list={["py-24 md:py-32", className]}>
+  <Container>
+    {
+      hasHeader && (
+        <header class="mb-12 flex flex-col gap-6 md:mb-16 md:flex-row md:items-end md:justify-between" data-reveal>
+          <div class="max-w-2xl">
+            {eyebrow && <p class="eyebrow mb-3">{eyebrow}</p>}
+            {title && <h2 id={headingId}>{title}</h2>}
+            {description && <p class="mt-4 text-base leading-relaxed text-muted md:text-lg">{description}</p>}
+          </div>
+          {Astro.slots.has("action") && <div class="shrink-0"><slot name="action" /></div>}
+        </header>
+      )
+    }
+    <slot />
+  </Container>
+</section>

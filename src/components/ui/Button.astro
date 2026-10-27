@@ -1,0 +1,41 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+/**
+ * Link styled as a button. `primary` uses the accent fill (one per view);
+ * `secondary` is a neutral card button.
+ */
+interface Props extends HTMLAttributes<"a"> {
+  href: string;
+  variant?: "primary" | "secondary";
+  size?: "md" | "sm";
+  /** Open in a new tab. */
+  external?: boolean;
+}
+
+const { href, variant = "primary", size = "md", external = false, class: className, ...rest } = Astro.props;
+
+const variants = {
+  primary: "bg-accent text-on-accent hover:bg-accent-hover",
+  secondary: "bg-card text-fg hover:text-link",
+};
+const sizes = {
+  md: "gap-2 rounded-xl px-5 py-2.5 text-sm",
+  sm: "gap-1.5 rounded-lg px-3 py-1.5 text-sm",
+};
+---
+
+<a
+  href={href}
+  target={external ? "_blank" : undefined}
+  rel={external ? "noopener noreferrer" : undefined}
+  class:list={[
+    "comic-button inline-flex items-center justify-center font-bold",
+    variants[variant],
+    sizes[size],
+    className,
+  ]}
+  {...rest}
+>
+  <slot />
+</a>

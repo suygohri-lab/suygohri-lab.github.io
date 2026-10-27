@@ -5,12 +5,20 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Icon from "../components/Icon.astro";
 import SocialLinks from "../components/SocialLinks.astro";
 import PublicationList from "../components/PublicationList.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import BlochSphere from "../components/art/BlochSphere.astro";
+import TypedText from "../components/TypedText.astro";
+import Button from "../components/ui/Button.astro";
+import Card from "../components/ui/Card.astro";
+import Container from "../components/ui/Container.astro";
+import Section from "../components/ui/Section.astro";
 import { site } from "../data/site";
+import { projects } from "../data/projects";
 import { getPublications } from "../utils/publications";
 
 const selected = (await getPublications()).filter((p) => p.data.selected);
 
-// Drop a square photo at public/profile.jpg to show it beside the intro.
+// Drop a square photo at public/profile.jpg to show it above your name.
 const hasPhoto = existsSync(join(process.cwd(), "public", "profile.jpg"));
 
 const formatNewsDate = (ym: string) =>
@@ -19,76 +27,103 @@ const formatNewsDate = (ym: string) =>
 
 <BaseLayout>
   <!-- Hero -->
-  <section class="flex flex-col-reverse gap-10 sm:flex-row sm:items-start sm:justify-between">
-    <div class="max-w-2xl">
-      <p class="font-mono text-xs font-medium tracking-[0.18em] text-muted uppercase">{site.title}</p>
-      <h1 class="mt-4 text-4xl tracking-[-0.03em] sm:text-5xl">{site.name}</h1>
+  <section aria-labelledby="hero-title" class="py-24 md:py-32">
+    <Container class="grid items-center gap-16 lg:grid-cols-[minmax(0,1fr)_24rem]">
+      <div data-reveal>
+        {
+          hasPhoto && (
+            <img
+              src="/profile.jpg"
+              alt={`Portrait of ${site.name}`}
+              width="96"
+              height="96"
+              class="comic-panel mb-8 size-24 object-cover"
+            />
+          )
+        }
+        <p class="speech-bubble inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-fg">
+          <span class="relative flex size-2">
+            <span class="absolute inline-flex size-full animate-ping rounded-full bg-art-2 opacity-60 motion-reduce:animate-none"></span>
+            <span class="relative inline-flex size-2 rounded-full bg-art-2"></span>
+          </span>
+          {site.title}
+        </p>
 
-      <p class="mt-5 text-sm leading-relaxed text-muted">
-        {site.affiliation.department},{" "}
-        <a class="link" href={site.affiliation.url} target="_blank" rel="noopener noreferrer">
-          {site.affiliation.university}
-        </a>
-        <br />
-        <a class="link" href={site.lab.url} target="_blank" rel="noopener noreferrer">{site.lab.name}</a>
-        {" "}&middot; Advised by{" "}
-        <a class="link" href={site.advisor.url} target="_blank" rel="noopener noreferrer">{site.advisor.name}</a>
-      </p>
+        <h1 id="hero-title" class="mt-8"><TypedText text={site.name} /></h1>
 
-      <div class="mt-8 space-y-4 leading-[1.75]">
-        {site.bio.map((paragraph) => <p>{paragraph}</p>)}
+        <p class="mt-4 text-lg text-muted">
+          {site.affiliation.department},{" "}
+          <a class="link" href={site.affiliation.url} target="_blank" rel="noopener noreferrer">
+            {site.affiliation.university}
+          </a>
+        </p>
+        <p class="mt-1 text-base text-muted">
+          <a class="link" href={site.lab.url} target="_blank" rel="noopener noreferrer">{site.lab.name}</a>
+          {" "}&middot; Advised by{" "}
+          <a class="link" href={site.advisor.url} target="_blank" rel="noopener noreferrer">{site.advisor.name}</a>
+        </p>
+
+        <div class="prose-block mt-8 space-y-4">
+          {site.bio.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+
+        <ul class="mt-8 flex flex-wrap gap-2" aria-label="Research interests">
+          {site.researchInterests.map((interest) => <li class="chip">{interest}</li>)}
+        </ul>
+
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <Button href="/cv/">
+            View CV <Icon name="arrow" class="size-4" />
+          </Button>
+          <Button href="/publications/" variant="secondary">Publications</Button>
+          <div class="sm:ml-2"><SocialLinks /></div>
+        </div>
       </div>
 
-      <ul class="mt-8 flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs tracking-wider text-accent uppercase" aria-label="Research interests">
-        {site.researchInterests.map((interest) => <li>{interest}</li>)}
-      </ul>
-
-      <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
-        <a href="/cv/" class="action">
-          View CV <Icon name="arrow" class="size-3.5" />
-        </a>
-        <SocialLinks />
+      <div class="mx-auto w-full max-w-sm lg:max-w-none" data-reveal>
+        <BlochSphere />
       </div>
-    </div>
-
-    {
-      hasPhoto && (
-        <img
-          src="/profile.jpg"
-          alt={`Portrait of ${site.name}`}
-          width="128"
-          height="128"
-          class="size-28 shrink-0 rounded-full object-cover sm:size-32"
-        />
-      )
-    }
+    </Container>
   </section>
+
+  <!-- Research projects -->
+  <Section
+    id="research"
+    eyebrow="Research"
+    title="Current projects"
+    description="Where quantum computing meets artificial intelligence: the questions I am working on now."
+    class="border-t border-line"
+  >
+    <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {projects.map((project) => <li><ProjectCard project={project} /></li>)}
+    </ul>
+  </Section>
+
+  <!-- Selected publications -->
+  <Section id="publications" eyebrow="Publications" title="Selected papers" class="border-t border-line">
+    <a slot="action" href="/publications/" class="text-action">
+      All publications <Icon name="arrow" class="size-4" />
+    </a>
+    <PublicationList publications={selected} />
+  </Section>
 
   <!-- News -->
   {
     site.news.length > 0 && (
-      <section class="mt-24">
-        <h2 class="section-label">News</h2>
-        <ul class="space-y-4">
-          {site.news.map(({ date, text }) => (
-            <li class="grid gap-x-8 gap-y-0.5 sm:grid-cols-[7rem_1fr]">
-              <time datetime={date} class="font-mono text-xs leading-6 tracking-wider text-muted uppercase tabular-nums">
-                {formatNewsDate(date)}
-              </time>
-              <span class="text-sm leading-6 sm:text-[15px]">{text}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <Section id="news" eyebrow="Updates" title="News" class="border-t border-line">
+        <Card padded={false} class="max-w-4xl" data-reveal>
+          <ul class="divide-y divide-line">
+            {site.news.map(({ date, text }) => (
+              <li class="flex flex-col gap-1 px-6 py-5 sm:flex-row sm:gap-8 md:px-8">
+                <time datetime={date} class="w-24 shrink-0 text-sm font-semibold text-muted tabular-nums">
+                  {formatNewsDate(date)}
+                </time>
+                <span class="text-base leading-relaxed">{text}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </Section>
     )
   }
-
-  <!-- Selected publications -->
-  <section class="mt-24">
-    <h2 class="section-label">Selected Publications</h2>
-    <PublicationList publications={selected} />
-    <a href="/publications/" class="action mt-12 sm:ml-[9rem]">
-      All publications <Icon name="arrow" class="size-3.5" />
-    </a>
-  </section>
 </BaseLayout>

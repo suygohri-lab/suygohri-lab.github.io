@@ -1,0 +1,75 @@
+---
+/**
+ * Types its text letter by letter, then leaves a blinking caret at the end.
+ * The full text is rendered on the server, so it still shows without JavaScript,
+ * and screen readers always get the whole text once.
+ */
+interface Props {
+  text: string;
+  /** Average milliseconds per letter. */
+  speed?: number;
+  /** Delay before the first letter, in milliseconds. */
+  delay?: number;
+}
+
+const { text, speed = 120, delay = 500 } = Astro.props;
+---
+
+<span class="typed" data-typed={text} data-speed={speed} data-delay={delay}>
+  <span class="sr-only">{text}</span><span class="typed__output" aria-hidden="true">{text}</span><span
+    class="typed__caret"
+    aria-hidden="true"></span>
+</span>
+
+<style>
+  .typed__caret {
+    display: inline-block;
+    width: 0.07em;
+    height: 0.85em;
+    margin-left: 0.06em;
+    vertical-align: -0.04em;
+    border-radius: 1px;
+    background: var(--link);
+    animation: caret-blink 1s step-end infinite;
+  }
+  /* The caret stays solid while letters are being typed, like a real editor. */
+  .typed.is-typing .typed__caret {
+    animation: none;
+  }
+  @keyframes caret-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .typed__caret {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const JITTER = 0.3; // ±30% variation per letter reads as human typing
+
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    for (const root of document.querySelectorAll<HTMLElement>("[data-typed]")) {
+      const text = root.dataset.typed ?? "";
+      const speed = Number(root.dataset.speed);
+      const output = root.querySelector<HTMLElement>(".typed__output")!;
+
+      output.textContent = "";
+      root.classList.add("is-typing");
+
+      let i = 0;
+      const step = () => {
+        if (i >= text.length) {
+          root.classList.remove("is-typing");
+          return;
+        }
+        output.textContent += text[i++];
+        setTimeout(step, speed * (1 + (Math.random() * 2 - 1) * JITTER));
+      };
+      setTimeout(step, Number(root.dataset.delay));
+    }
+  }
+</script>

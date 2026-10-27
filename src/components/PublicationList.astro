@@ -18,10 +18,10 @@ const items = await Promise.all(
 );
 ---
 
-<ol class="flex flex-col gap-10">
+<ol class="flex flex-col gap-6">
   {
     items.map(({ publication, Content }) => (
-      <li>
+      <li data-reveal>
         <PublicationCard publication={publication}>{Content && <Content />}</PublicationCard>
       </li>
     ))

@@ -1,0 +1,12 @@
+---
+/** Centered page-width wrapper: max-w-6xl (1152px) with responsive side padding. */
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={["container-page", className]}>
+  <slot />
+</div>

@@ -1,5 +1,6 @@
 ---
-import Icon from "./Icon.astro";
+import Icon, { type IconName } from "./Icon.astro";
+import Card from "./ui/Card.astro";
 import { isSelf, type Publication } from "../utils/publications";
 
 interface Props {
@@ -12,109 +13,108 @@ const { title, authors, venue, venueShort, year, pdf, code, links, bibtex, award
 // Pass the rendered Markdown body (abstract) in the default slot to enable the "Abstract" toggle.
 const hasAbstract = Astro.slots.has("default");
 const uid = publication.id.replace(/[^a-z0-9-]/gi, "-");
-const panelClass =
-  "grid grid-rows-[0fr] opacity-0 transition-all duration-300 ease-out data-open:mt-4 data-open:grid-rows-[1fr] data-open:opacity-100";
+
+const button =
+  "comic-button inline-flex items-center gap-1.5 rounded-lg bg-card px-3 py-1.5 text-sm font-semibold text-fg hover:text-link aria-expanded:bg-accent aria-expanded:text-on-accent aria-expanded:hover:text-on-accent";
+const panel =
+  "grid grid-rows-[0fr] opacity-0 transition-all duration-300 ease-in-out data-open:mt-5 data-open:grid-rows-[1fr] data-open:opacity-100";
+
+const outbound: { label: string; url: string; icon: IconName }[] = [
+  ...(pdf ? [{ label: "PDF", url: pdf, icon: "pdf" as const }] : []),
+  ...(code ? [{ label: "Code", url: code, icon: "code" as const }] : []),
+  ...links.map(({ label, url }) => ({ label, url, icon: "external" as const })),
+];
 ---
 
-<article class="grid gap-x-8 gap-y-1.5 sm:grid-cols-[7rem_1fr]">
-  <p class="font-mono text-xs leading-6 tracking-wider text-muted uppercase sm:pt-px">
-    {venueShort ?? venue} {year}
-  </p>
-
-  <div class="min-w-0">
-    <h3 class="text-base leading-snug sm:text-[17px]">{title}</h3>
-
-    <p class="mt-1.5 text-sm leading-relaxed text-text">
-      {
-        authors.map((author, i) => (
-          <>
-            {isSelf(author) ? <strong class="font-semibold text-fg">{author}</strong> : author}
-            {i < authors.length - 1 && ", "}
-          </>
-        ))
-      }
-    </p>
-
-    <p class="mt-0.5 text-sm text-muted">
-      <em>{venue}</em>, {year}
-      {award && <span class="font-medium text-fg"> &middot; {award}</span>}
-    </p>
-
-    <div class="mt-3 flex flex-wrap gap-x-5 gap-y-2">
-      {
-        pdf && (
-          <a class="action" href={pdf} target="_blank" rel="noopener noreferrer">
-            PDF <Icon name="external" class="size-3" />
-          </a>
-        )
-      }
-      {
-        code && (
-          <a class="action" href={code} target="_blank" rel="noopener noreferrer">
-            Code <Icon name="external" class="size-3" />
-          </a>
-        )
-      }
-      {
-        links.map(({ label, url }) => (
-          <a class="action" href={url} target="_blank" rel="noopener noreferrer">
-            {label} <Icon name="external" class="size-3" />
-          </a>
-        ))
-      }
-      {
-        hasAbstract && (
-          <button type="button" class="action group/t" data-pub-toggle aria-expanded="false" aria-controls={`abs-${uid}`}>
-            Abstract
-            <Icon name="chevron" class="size-3 transition-transform group-aria-expanded/t:rotate-180" />
-          </button>
-        )
-      }
-      {
-        bibtex && (
-          <button type="button" class="action group/t" data-pub-toggle aria-expanded="false" aria-controls={`bib-${uid}`}>
-            BibTeX
-            <Icon name="chevron" class="size-3 transition-transform group-aria-expanded/t:rotate-180" />
-          </button>
-        )
-      }
-    </div>
-
+<Card as="article" interactive>
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="rounded-md border-2 border-ink px-2 py-0.5 text-xs font-bold tracking-wide text-fg">
+      {venueShort ?? venue} {year}
+    </span>
     {
-      hasAbstract && (
-        <div id={`abs-${uid}`} class={panelClass} inert>
-          <div class="overflow-hidden">
-            <div class="border-l border-line pl-4 text-sm leading-relaxed text-text">
-              <slot />
-            </div>
-          </div>
-        </div>
-      )
-    }
-
-    {
-      bibtex && (
-        <div id={`bib-${uid}`} class={panelClass} inert>
-          <div class="overflow-hidden">
-            <div class="relative">
-              <pre class="overflow-x-auto rounded-md bg-surface p-4 pr-12 font-mono text-xs leading-relaxed text-text"><code>{bibtex.trim()}</code></pre>
-              <button
-                type="button"
-                data-copy-bibtex
-                aria-label="Copy BibTeX"
-                title="Copy BibTeX"
-                class="absolute top-3 right-3 grid size-7 place-items-center text-muted transition-colors hover:text-accent"
-              >
-                <Icon name="copy" class="size-4 [[data-copied]_&]:hidden" />
-                <Icon name="check" class="hidden size-4 text-accent [[data-copied]_&]:block" />
-              </button>
-            </div>
-          </div>
-        </div>
+      award && (
+        <span class="inline-flex items-center gap-1 rounded-md border-2 border-ink bg-highlight px-2 py-0.5 text-xs font-bold text-fg">
+          <Icon name="award" class="size-3.5" />
+          {award}
+        </span>
       )
     }
   </div>
-</article>
+
+  <h3 class="mt-4 text-lg leading-snug md:text-xl">{title}</h3>
+
+  <p class="mt-2 text-base leading-relaxed text-text">
+    {
+      authors.map((author, i) => (
+        <>
+          {isSelf(author) ? <strong class="font-semibold text-fg">{author}</strong> : author}
+          {i < authors.length - 1 && ", "}
+        </>
+      ))
+    }
+  </p>
+  <p class="mt-1 text-sm text-muted italic">{venue}, {year}</p>
+
+  <div class="mt-5 flex flex-wrap gap-2">
+    {
+      outbound.map(({ label, url, icon }) => (
+        <a class={button} href={url} target="_blank" rel="noopener noreferrer">
+          <Icon name={icon} class="size-4" /> {label}
+        </a>
+      ))
+    }
+    {
+      hasAbstract && (
+        <button type="button" class:list={[button, "group/t"]} data-pub-toggle aria-expanded="false" aria-controls={`abs-${uid}`}>
+          <Icon name="text" class="size-4" /> Abstract
+          <Icon name="chevron" class="size-3.5 transition-all duration-200 ease-in-out group-aria-expanded/t:rotate-180" />
+        </button>
+      )
+    }
+    {
+      bibtex && (
+        <button type="button" class:list={[button, "group/t"]} data-pub-toggle aria-expanded="false" aria-controls={`bib-${uid}`}>
+          <Icon name="quote" class="size-4" /> BibTeX
+          <Icon name="chevron" class="size-3.5 transition-all duration-200 ease-in-out group-aria-expanded/t:rotate-180" />
+        </button>
+      )
+    }
+  </div>
+
+  {
+    hasAbstract && (
+      <div id={`abs-${uid}`} class={panel} inert>
+        <div class="overflow-hidden">
+          <div class="max-w-2xl rounded-xl bg-surface px-5 py-4 text-base leading-relaxed text-text">
+            <slot />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    bibtex && (
+      <div id={`bib-${uid}`} class={panel} inert>
+        <div class="overflow-hidden">
+          <div class="relative">
+            <pre class="overflow-x-auto rounded-xl bg-surface p-5 pr-14 font-mono text-xs leading-relaxed text-text"><code>{bibtex.trim()}</code></pre>
+            <button
+              type="button"
+              data-copy-bibtex
+              aria-label="Copy BibTeX"
+              title="Copy BibTeX"
+              class="comic-button absolute top-3 right-3 grid size-8 place-items-center rounded-lg bg-card text-fg hover:text-link"
+            >
+              <Icon name="copy" class="size-4 [[data-copied]_&]:hidden" />
+              <Icon name="check" class="hidden size-4 text-link [[data-copied]_&]:block" />
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+</Card>
 
 <script>
   // Event delegation: one listener handles every card on the page.
