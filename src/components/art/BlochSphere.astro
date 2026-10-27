@@ -81,7 +81,7 @@ const trail = Array.from({ length: TRAIL }, (_, i) => stateFrame(THETA, PHI0 - (
   }
   @media (prefers-reduced-motion: reduce) {
     .bloch-orbit {
-      animation: none;
+      animation-duration: 6s;
     }
   }
 </style>
@@ -90,8 +90,11 @@ const trail = Array.from({ length: TRAIL }, (_, i) => stateFrame(THETA, PHI0 - (
   import { project, stateFrame, THETA } from "../../utils/bloch";
 
   const group = document.querySelector<SVGGElement>("[data-bloch-state]");
+  // Phones often have "Remove animations" / "Reduce Motion" switched on. Rather than
+  // freezing the sphere, turn it slowly and skip the sudden "measurement" jumps.
+  const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  if (group && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  if (group) {
     const one = (name: string) => group.querySelector(`[data-part="${name}"]`)!;
     const trail = [...group.querySelectorAll('[data-part="trail"]')];
     const trailOpacity = trail.map((el) => Number(el.getAttribute("opacity")));
@@ -122,11 +125,11 @@ const trail = Array.from({ length: TRAIL }, (_, i) => stateFrame(THETA, PHI0 - (
       const local = t - n * CYCLE;
       const arrive = PRECESS + COLLAPSE;
       const theta =
-        local < PRECESS ? THETA
+        calm || local < PRECESS ? THETA
         : local < arrive ? lerp(THETA, target, (local - PRECESS) / COLLAPSE)
         : local < arrive + HOLD ? target
         : lerp(target, THETA, (local - arrive - HOLD) / RETURN);
-      const phi = 0.9 + t * 0.55;
+      const phi = 0.9 + t * (calm ? 0.3 : 0.55);
 
       const f = stateFrame(theta, phi);
       set(vec, { x2: f.tip[0], y2: f.tip[1] });
@@ -143,7 +146,7 @@ const trail = Array.from({ length: TRAIL }, (_, i) => stateFrame(THETA, PHI0 - (
 
       // Ripple at the pole the state collapsed to.
       const since = local - arrive;
-      if (since >= 0 && since < RIPPLE) {
+      if (!calm && since >= 0 && since < RIPPLE) {
         const [px, py] = project([0, 0, target === 0 ? 1 : -1]);
         set(ring, { cx: px, cy: py, r: 4 + 18 * (since / RIPPLE), opacity: 0.9 * (1 - since / RIPPLE) });
       } else {
@@ -151,7 +154,8 @@ const trail = Array.from({ length: TRAIL }, (_, i) => stateFrame(THETA, PHI0 - (
       }
     };
 
-    // Only animate while the sphere is on screen.
+    // Only animate while the sphere is on screen. Watch the <figure> (an HTML element):
+    // Safari on iPhone does not reliably report visibility for SVG shapes.
     let visible = false;
     const loop = (now: number) => {
       draw(now);
@@ -161,6 +165,6 @@ const trail = Array.from({ length: TRAIL }, (_, i) => stateFrame(THETA, PHI0 - (
       const wasVisible = visible;
       visible = entry.isIntersecting;
       if (visible && !wasVisible) requestAnimationFrame(loop);
-    }).observe(group);
+    }).observe(group.closest("figure") ?? group);
   }
 </script>

@@ -41,17 +41,14 @@ const { text, speed = 120, delay = 500 } = Astro.props;
       opacity: 0;
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .typed__caret {
-      animation: none;
-    }
-  }
 </style>
 
 <script>
   const JITTER = 0.3; // ±30% variation per letter reads as human typing
 
-  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  // Typing runs even when the phone asks for reduced motion: it is brief, nothing
+  // moves across the screen, and it ends within ~2 seconds.
+  {
     for (const root of document.querySelectorAll<HTMLElement>("[data-typed]")) {
       const text = root.dataset.typed ?? "";
       const speed = Number(root.dataset.speed);

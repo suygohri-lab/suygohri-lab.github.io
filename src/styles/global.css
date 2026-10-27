@@ -4,56 +4,56 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Semantic color tokens, 60 / 30 / 10:
- *   60% background (--bg, with --card surfaces on top)
- *   30% text and structure (--fg, --text, --muted, --line)
- *   10% one accent (--accent fills primary buttons, --link colors links)
+ * Semantic color tokens.
+ *   Light: "academic paper" off-white page, pure white cards, near-black text, academic blue.
+ *   Dark:  JetBrains IDE charcoal page, lifted gray cards, off-white text, tech blue.
  * Contrast ratios are against --bg (WCAG AA needs 4.5:1 for body text).
  */
 :root {
-  --bg: #f8fafc; /* slate-50 */
-  --card: #f8fafc; /* cards match the page; ink outlines separate them */
-  --fg: #0f172a; /* slate-900, headings: 17.1:1 */
-  --text: #334155; /* slate-700, body: 9.9:1 */
-  --muted: #475569; /* slate-600, metadata: 7.2:1 */
-  --line: #e2e8f0; /* slate-200 */
-  --surface: #f1f5f9; /* slate-100, chips, code blocks, image placeholders */
-  --highlight: #b2ffff; /* text selection */
-  --accent: #1974d2; /* palette blue: primary button fill (white text 4.7:1) */
-  --accent-hover: #00308f; /* palette navy */
+  --bg: #f7f8fa; /* off-white page */
+  --card: #ffffff; /* white cards lift off the page */
+  --fg: #191a1c; /* primary text: 16.6:1 */
+  --text: #191a1c;
+  --muted: #62656a; /* secondary text (abstracts, dates): 5.5:1 (5.9:1 on cards) */
+  --line: #e3e5e8;
+  --surface: #f7f8fa; /* code blocks and panels inside white cards */
+  --highlight: #dcebfa; /* badges and text selection */
+  --accent: #005fb8; /* academic blue: button fill (white text 6.3:1) */
+  --accent-hover: #004a90;
   --on-accent: #ffffff;
-  --link: #1565c0; /* palette blue one shade deeper: 5.4:1 on slate-50 (#1974d2 is 4.4:1) */
-  --link-hover: #00308f; /* palette navy: 11.2:1 */
-  --ink: #0f172a; /* comic outlines and hard shadows */
+  --link: #005fb8; /* 5.9:1 */
+  --link-hover: #004a90; /* 8.3:1 */
+  --ink: #191a1c; /* comic outlines and hard shadows */
 
   /* Illustration colors (figures only, never body text), darkest first. */
-  --art-1: #00308f;
-  --art-2: #1974d2;
-  --art-3: #8edfff;
-  --art-4: #b2ffff;
+  --art-1: #005fb8;
+  --art-2: #3574f0;
+  --art-3: #78a2e8;
+  --art-4: #cfe0fa;
 }
 
 .dark {
-  --bg: #000000; /* black */
-  --card: #000000; /* cards match the page; outlines separate them */
-  --fg: #f5f5f5; /* neutral-100: 19.3:1 */
-  --text: #d4d4d4; /* neutral-300: 14.0:1 */
-  --muted: #a3a3a3; /* neutral-400: 8.5:1 */
-  --line: #262626; /* neutral-800 */
-  --surface: #171717; /* neutral-900 */
-  --highlight: #00308f;
-  --accent: #8edfff; /* palette sky */
-  --accent-hover: #b2ffff;
-  --on-accent: #000000; /* 14.6:1 on the sky fill */
-  --link: #8edfff; /* 14.6:1 */
-  --link-hover: #b2ffff; /* 18.3:1 */
-  --ink: #e5e5e5; /* light ink so outlines read on black */
+  --bg: #1e1f22; /* JetBrains IDE charcoal */
+  --card: #2b2d30; /* lifted cards */
+  --fg: #e6e8ea; /* primary text: 13.3:1 (11.1:1 on cards) */
+  --text: #e6e8ea;
+  --muted: #9c9fa4; /* secondary text: 6.2:1 (5.2:1 on cards) */
+  --line: #393b40;
+  --surface: #1e1f22; /* code blocks and panels sink back inside cards */
+  --highlight: #26385c;
+  /* #78a2e8 rather than #3574f0: the brighter blue is only 3.9:1 on #1e1f22, below AA for text. */
+  --accent: #78a2e8; /* button fill (dark text 6.4:1) */
+  --accent-hover: #a9c4f2;
+  --on-accent: #1e1f22;
+  --link: #78a2e8; /* 6.4:1 (5.3:1 on cards) */
+  --link-hover: #a9c4f2; /* 9.6:1 */
+  --ink: #9c9fa4; /* soft gray ink: outlines stay visible without glaring */
 
   /* Same palette, reversed so the most prominent strokes stay brightest. */
-  --art-1: #b2ffff;
-  --art-2: #8edfff;
-  --art-3: #1974d2;
-  --art-4: #00308f;
+  --art-1: #a9c4f2;
+  --art-2: #78a2e8;
+  --art-3: #3574f0;
+  --art-4: #26385c;
 }
 
 @theme inline {
@@ -77,16 +77,55 @@
   --color-art-4: var(--art-4);
 }
 
+/*
+ * JetBrains Mono 2.304, self-hosted from public/fonts (SIL Open Font License,
+ * see public/fonts/JetBrainsMono-OFL.txt). Used for all text on the site.
+ */
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/JetBrainsMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/JetBrainsMono-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/JetBrainsMono-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/JetBrainsMono-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/JetBrainsMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, monospace;
+  --font-sans: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 @layer base {
   html {
     @apply scroll-smooth antialiased;
     color-scheme: light;
-    font-feature-settings: "cv11", "ss01"; /* Inter: straight-sided digits, open forms */
   }
   html.dark {
     color-scheme: dark;
@@ -127,11 +166,11 @@ html.js [data-reveal].revealed {
   opacity: 1;
   transform: none;
 }
+/* With reduced motion on (common on phones), keep the fade but drop the upward slide. */
 @media (prefers-reduced-motion: reduce) {
   html.js [data-reveal] {
-    opacity: 1;
     transform: none;
-    transition: none;
+    transition: opacity 0.6s ease-in-out;
   }
 }
 

@@ -1,7 +1,11 @@
 ---
 import Container from "./Container.astro";
+import TypedText from "../TypedText.astro";
 
-/** Top-of-page title block for inner pages. Slot: actions under the description. */
+/**
+ * Top-of-page title block for inner pages; the title types itself out like the
+ * name on the home page. Slot: actions under the description.
+ */
 interface Props {
   title: string;
   eyebrow?: string;
@@ -9,13 +13,15 @@ interface Props {
 }
 
 const { title, eyebrow, description } = Astro.props;
+// Long titles type a little faster so none takes much longer than ~2 seconds.
+const speed = Math.min(120, Math.round(2000 / title.length));
 ---
 
 <header class="pt-24 pb-12 md:pt-32 md:pb-16">
   <Container>
     <div class="max-w-2xl" data-reveal>
       {eyebrow && <p class="eyebrow mb-3">{eyebrow}</p>}
-      <h1>{title}</h1>
+      <h1><TypedText text={title} speed={speed} /></h1>
       {description && <p class="mt-6 text-base leading-relaxed text-muted md:text-lg"><Fragment set:html={description} /></p>}
       {Astro.slots.has("default") && <div class="mt-8 flex flex-wrap gap-4"><slot /></div>}
     </div>
