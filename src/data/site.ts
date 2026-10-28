@@ -20,7 +20,9 @@ export const site = {
 
   /** Each string is rendered as its own paragraph. */
   bio: [
-    "Research Scholar (UGC-JRF) in Computer Science I work on Quantum Computing and Artificial Intelligence, with a focus on how quantum approaches can be used to design AI algorithms. I completed my M.Sc. at Kurukshetra University and teach as an assistant professor at MLN College, Yamuna Nagar. I’m early in my research career and keen to learn, so I welcome conversations with people working on related problems.",
+    "Research Scholar (UGC-JRF) in Computer Science. I work on Quantum Error Correction (QEC) to design stable, fault-tolerant algorithms.",
+    "I completed my M.Sc. at Kurukshetra University and teach as an assistant professor at MLN College, Yamuna Nagar.",
+    "I’m early in my research career and keen to learn, so I welcome conversations with people working on related problems.",
   ],
 
   researchInterests: [
