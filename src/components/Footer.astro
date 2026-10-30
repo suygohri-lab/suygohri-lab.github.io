@@ -5,10 +5,16 @@ import { nav, site } from "../data/site";
 
 const year = new Date().getFullYear();
 const updated = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+
+const motionOptions = [
+  { value: "auto", label: "Match device" },
+  { value: "full", label: "Always on" },
+  { value: "reduced", label: "Reduced" },
+];
 ---
 
 <footer class="border-t-2 border-ink">
-  <Container class="flex flex-col gap-8 py-12 md:flex-row md:items-center md:justify-between">
+  <Container class="flex flex-col gap-8 py-12 md:flex-row md:items-start md:justify-between">
     <div>
       <p class="font-bold tracking-tight text-fg">{site.name}</p>
       <p class="mt-1 text-sm text-muted">{site.title} &middot; {site.affiliation.university}</p>
@@ -27,6 +33,47 @@ const updated = new Date().toLocaleDateString("en-US", { year: "numeric", month:
         </ul>
       </nav>
       <SocialLinks size="sm" />
+
+      <!-- Animations setting: applies to everything that moves (characters, sphere, footprints, fades). -->
+      <fieldset class="flex flex-col gap-2 md:items-end">
+        <legend class="mb-2 text-sm font-semibold text-fg md:ml-auto">Animations</legend>
+        <div class="flex flex-wrap gap-2">
+          {
+            motionOptions.map(({ value, label }) => (
+              <label class="motion-option inline-flex min-h-11 cursor-pointer items-center rounded-full border-2 border-ink bg-card px-3.5 text-sm font-semibold text-fg transition-all duration-200 ease-in-out has-checked:bg-accent has-checked:text-on-accent has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent">
+                <input type="radio" name="motion" value={value} class="sr-only" checked={value === "auto"} />
+                {label}
+              </label>
+            ))
+          }
+        </div>
+        <p data-motion-note class="max-w-xs text-xs leading-relaxed text-muted md:text-right"></p>
+      </fieldset>
     </div>
   </Container>
 </footer>
+
+<script>
+  type SiteMotion = { get: () => string; set: (v: string) => void; deviceAsksForLess: () => boolean };
+  const motion = (window as unknown as { siteMotion?: SiteMotion }).siteMotion;
+  const radios = [...document.querySelectorAll<HTMLInputElement>('input[name="motion"]')];
+  const note = document.querySelector<HTMLElement>("[data-motion-note]");
+
+  const sync = () => {
+    if (!motion) return;
+    const pref = motion.get();
+    radios.forEach((r) => (r.checked = r.value === pref));
+    if (note) {
+      note.textContent =
+        pref === "auto" && motion.deviceAsksForLess()
+          ? "Your device is asking for less motion (often battery saver), so things move gently. Choose “Always on” for full animation."
+          : pref === "reduced"
+            ? "Animations are calmed: characters hold still and nothing slides."
+            : "";
+    }
+  };
+
+  radios.forEach((r) => r.addEventListener("change", () => r.checked && motion?.set(r.value)));
+  window.addEventListener("motionchange", sync);
+  sync();
+</script>

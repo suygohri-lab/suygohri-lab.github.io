@@ -12,7 +12,7 @@ const { project } = Astro.props;
 const { title, summary, status, tags, icon, image, imageAlt, link } = project;
 ---
 
-<Card as="article" interactive padded={false} class="group flex h-full flex-col overflow-hidden" data-reveal>
+<Card as="article" interactive padded={false} class="group flex h-full flex-col overflow-hidden" data-reveal data-companion-item data-companion-title={title}>
   <div class="relative aspect-video overflow-hidden border-b-2 border-ink bg-card">
     {
       image ? (

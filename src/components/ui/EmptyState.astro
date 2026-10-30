@@ -12,7 +12,7 @@ interface Props {
 const { title, message, icon = "pdf" } = Astro.props;
 ---
 
-<Card class="flex max-w-2xl items-start gap-5" data-reveal>
+<Card class="flex max-w-2xl items-start gap-5" data-reveal data-companion-item data-companion-title={title}>
   <span class="grid size-12 shrink-0 place-items-center rounded-xl border-2 border-ink text-art-2" aria-hidden="true">
     <Icon name={icon} class="size-5" />
   </span>

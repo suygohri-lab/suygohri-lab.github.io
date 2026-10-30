@@ -49,7 +49,7 @@ const extraColumns: Record<number, string> = { 1: "max-w-2xl", 2: "md:grid-cols-
       <Section title={extrasTitle} class="border-t border-line">
         <div class:list={["grid gap-6", extraColumns[extras.length]]}>
           {awards.length > 0 && (
-            <Card data-reveal>
+            <Card data-reveal data-companion-item data-companion-title="Honors & awards">
               <h3 class="text-lg">Honors &amp; awards</h3>
               <ul class="mt-5 space-y-4">
                 {awards.map(({ title, year }) => (
@@ -63,7 +63,7 @@ const extraColumns: Record<number, string> = { 1: "max-w-2xl", 2: "md:grid-cols-
           )}
 
           {service.length > 0 && (
-            <Card data-reveal>
+            <Card data-reveal data-companion-item data-companion-title="Service">
               <h3 class="text-lg">Service</h3>
               <ul class="mt-5 space-y-3 text-base leading-relaxed">
                 {service.map((item) => <li>{item}</li>)}
@@ -72,7 +72,7 @@ const extraColumns: Record<number, string> = { 1: "max-w-2xl", 2: "md:grid-cols-
           )}
 
           {skills.length > 0 && (
-            <Card data-reveal>
+            <Card data-reveal data-companion-item data-companion-title="Skills">
               <h3 class="text-lg">Skills</h3>
               <dl class="mt-5 space-y-5">
                 {skills.map(({ label, items }) => (

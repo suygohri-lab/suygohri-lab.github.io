@@ -6,6 +6,7 @@ import Icon from "./Icon.astro";
 <button
   type="button"
   data-theme-toggle
+  data-companion-perch-before
   aria-label="Dark mode"
   aria-pressed="false"
   title="Toggle dark mode"
@@ -29,6 +30,7 @@ import Icon from "./Icon.astro";
         localStorage.setItem("theme", dark ? "dark" : "light");
       } catch {}
       sync();
+      document.dispatchEvent(new CustomEvent("companion", { detail: { type: "theme", dark } }));
     });
   }
 </script>

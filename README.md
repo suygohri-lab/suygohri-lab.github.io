@@ -61,6 +61,32 @@ bibtex: |
 Optional abstract in Markdown. When present, an "Abstract" toggle appears on the card.
 ```
 
+## Companions (Pip and Minerva)
+
+Two animated characters live in `public/companions/` as plain files (no build step, no inline code):
+Pip the scientist walks along the bottom of the screen; Minerva the owl perches on the header and
+flies to whatever you open. Add them to any page with:
+
+```html
+<link rel="stylesheet" href="/companions/companions.css">
+<script src="/companions/companions.js" defer></script>
+```
+
+- **Tips** come from `<script type="application/json" id="companion-data">`, built in `src/layouts/BaseLayout.astro`
+  from your real content. Reminders for you (placeholders, missing dates) appear only on `localhost`.
+- **Hooks:** `data-companion-perch` (+ `-after` / `-before`) marks the header gap Minerva sits in;
+  `data-companion-item` (+ `data-companion-title`) marks things she can fly to or be dropped on.
+- **Events:** `document.dispatchEvent(new CustomEvent("companion", { detail: { type, target, announce } }))`
+  with `opened`, `copied`, `copy-failed`, `placeholder`, `theme`, `paused`, `resumed`, `menu`, `saved`, `error`.
+- **Animations setting** (footer): Match device / Always on / Reduced, stored in `localStorage` and applied
+  before paint by `public/boot.js` as `html[data-reduced-motion]`. Everything that moves follows it.
+
+## Security
+
+The published pages carry a strict Content-Security-Policy (`script-src 'self'; style-src 'self'`, set in
+`BaseLayout.astro`, production builds only). Astro is configured to emit every script and stylesheet as a
+file (`astro.config.mjs`), and the theme/motion setup lives in `public/boot.js`, so no inline code is needed.
+
 ## Deployment
 
 This is a GitHub Pages **user site**, so the repository must be named `suygohri-lab.github.io`.

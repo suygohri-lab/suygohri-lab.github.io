@@ -29,7 +29,7 @@ const s = stateFrame(THETA, PHI0);
 const trail = Array.from({ length: TRAIL }, (_, i) => stateFrame(THETA, PHI0 - (i + 1) * 0.07).tip);
 ---
 
-<figure class:list={["halftone", className]}>
+<figure class:list={["halftone", className]} data-companion-item data-companion-title="the Bloch sphere">
   <svg viewBox="0 0 240 240" class="w-full" role="img" aria-label="Animated Bloch sphere showing a qubit state">
     <circle cx={cx} cy={cy} r={r} fill="var(--art-4)" fill-opacity="0.14" stroke="var(--muted)" stroke-opacity="0.7" />
 
@@ -94,10 +94,8 @@ const trail = Array.from({ length: TRAIL }, (_, i) => stateFrame(THETA, PHI0 - (
       stroke-dashoffset: -12;
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .bloch-orbit {
-      animation-duration: 6s;
-    }
+  :global(html[data-reduced-motion]) .bloch-orbit {
+    animation-duration: 6s;
   }
   .is-paused .bloch-orbit {
     animation-play-state: paused;
@@ -110,7 +108,8 @@ const trail = Array.from({ length: TRAIL }, (_, i) => stateFrame(THETA, PHI0 - (
   const group = document.querySelector<SVGGElement>("[data-bloch-state]");
   // Phones often have "Remove animations" / "Reduce Motion" switched on. Rather than
   // freezing the sphere, turn it slowly and skip the sudden "measurement" jumps.
-  const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Read each frame, so changing the footer's Animations setting applies immediately.
+  const isCalm = () => document.documentElement.hasAttribute("data-reduced-motion");
 
   if (group) {
     const one = (name: string) => group.querySelector(`[data-part="${name}"]`)!;
@@ -141,6 +140,7 @@ const trail = Array.from({ length: TRAIL }, (_, i) => stateFrame(THETA, PHI0 - (
       }
       const local = t - n * CYCLE;
       const arrive = PRECESS + COLLAPSE;
+      const calm = isCalm();
       const theta =
         calm || local < PRECESS ? THETA
         : local < arrive ? lerp(THETA, target, (local - PRECESS) / COLLAPSE)
@@ -217,6 +217,7 @@ const trail = Array.from({ length: TRAIL }, (_, i) => stateFrame(THETA, PHI0 - (
         paused = !paused;
         pauseButton.setAttribute("aria-pressed", String(paused));
         figure?.classList.toggle("is-paused", paused);
+        document.dispatchEvent(new CustomEvent("companion", { detail: { type: paused ? "paused" : "resumed", target: figure } }));
         start();
       });
     }

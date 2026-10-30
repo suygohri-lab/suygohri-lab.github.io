@@ -5,6 +5,9 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import Footsteps from "../components/art/Footsteps.astro";
 import { site } from "../data/site";
+import { awards, education, experience, skills } from "../data/cv";
+import { projects } from "../data/projects";
+import { getPublications } from "../utils/publications";
 
 interface Props {
   /** Page title; the site name is appended automatically. */
@@ -15,12 +18,74 @@ interface Props {
 const { title, description = site.description } = Astro.props;
 const fullTitle = title ? `${title} | ${site.name}` : `${site.name} | ${site.title}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+
+// ---- What the companions (public/companions/) say when clicked, from this site's real content.
+const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const page = path === "/" ? "home" : path === "/publications" ? "publications" : path === "/cv" ? "cv" : "other";
+const papers = await getPublications();
+const list = (items: readonly string[]) =>
+  items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} and ${items.at(-1)}`;
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+const role = experience[0];
+
+const tips: string[] = [`${site.name} works on ${list(site.researchInterests.slice(0, 3))}.`];
+if (page === "home" || page === "other") {
+  if (projects.length) tips.push(`${plural(projects.length, "research project")} underway, like “${projects[0].title}”.`);
+  tips.push(papers.length ? `${plural(papers.length, "paper")} so far. See the Publications page.` : "Papers are coming soon. Check the Publications page later.");
+  tips.push("Try the Pause button under the Bloch sphere. It shows a qubit turning.");
+  tips.push("Drag Minerva the owl onto a project card and she’ll keep watch there.");
+}
+if (page === "publications") {
+  tips.push(papers.length ? `${plural(papers.length, "paper")}, newest first. Open BibTeX on one to cite it.` : "No papers yet. The first ones are in progress.");
+  if (papers[0]) tips.push(`Latest: “${papers[0].data.title}”.`);
+  tips.push(`${site.name}’s name is in bold in each author list.`);
+}
+if (page === "cv") {
+  if (role) tips.push(`Currently ${role.title} at ${role.org}.`);
+  if (education[0]) tips.push(`Studying for a ${education[0].title} at ${education[0].org}.`);
+  if (awards[0]) tips.push(`Award: ${awards[0].title} (${awards[0].year}).`);
+  if (skills[0]) tips.push(`Programs in ${list(skills[0].items)}.`);
+}
+
+// Reminders for you only: included in the page during local development, never in the published site.
+const ownerTips: string[] = [];
+if (import.meta.env.DEV) {
+  if (!papers.length) ownerTips.push("Reminder: no papers yet. Copy a sample in src/content/publications/ and set draft: false.");
+  if (role && !/\d{4}/.test(role.period)) ownerTips.push(`Reminder: your ${role.org} role needs a start year (src/data/cv.ts).`);
+  if (site.lab.name.startsWith("Your")) ownerTips.push("Reminder: the lab and advisor names are still placeholders (src/data/site.ts).");
+  ownerTips.push("Reminder: the research projects are placeholders. Replace them in src/data/projects.ts.");
+}
+
+const companionData = {
+  page,
+  tips,
+  ownerTips,
+  pipGreeting: page === "publications" ? "Looking for papers? Click me for a tip." : page === "cv" ? "Here’s the CV. Click me for a tip." : "Click me for a tip.",
+  owlGreeting: page === "home" ? `Hoo! Welcome to ${site.name}’s research page.` : "Hoo! Drag me onto anything you’d like me to watch.",
+};
+// "<" escaped so the JSON can never close its <script> element early.
+const companionJson = JSON.stringify(companionData).replace(/</g, "\\u003c");
+
+// A strict Content-Security-Policy for the published site: only this site's own scripts, styles,
+// fonts and images. (Not used in development, where Astro injects inline scripts for hot reload.)
+const csp = [
+  "default-src 'self'",
+  "script-src 'self'",
+  "style-src 'self'",
+  "img-src 'self' data:",
+  "font-src 'self'",
+  "connect-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join("; ");
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    {import.meta.env.PROD && <meta http-equiv="Content-Security-Policy" content={csp} />}
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -37,21 +102,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
 
-    <!-- Before first paint: light theme unless the visitor chose dark; flag that JS runs (for reveal animations). -->
-    <script is:inline>
-      (() => {
-        let theme = null;
-        try {
-          theme = localStorage.getItem("theme");
-        } catch {}
-        document.documentElement.classList.toggle("dark", theme === "dark");
-        document.documentElement.classList.add("js");
-        // Safety net: if the reveal script never runs (blocked or failed), show the content anyway.
-        setTimeout(() => {
-          if (!document.querySelector(".revealed")) document.documentElement.classList.remove("js");
-        }, 3000);
-      })();
-    </script>
+    <!-- Before first paint: theme, the Animations setting, and the JS flag for reveals (public/boot.js). -->
+    <script is:inline src="/boot.js"></script>
+
+    <!-- Pip and Minerva: plain, self-contained files in public/companions/. -->
+    <link rel="stylesheet" href="/companions/companions.css" />
+    <script is:inline src="/companions/companions.js" defer></script>
   </head>
   <body class="flex min-h-dvh flex-col">
     <a
@@ -69,6 +125,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <Footer />
     <!-- Polite announcements for screen readers (e.g. "BibTeX copied"). -->
     <p id="live-status" class="sr-only" role="status" aria-live="polite"></p>
+    <!-- Tips for the companions (data, not code). -->
+    <script type="application/json" id="companion-data" set:html={companionJson} />
 
     <script>
       // Reveal elements as they scroll into view; items arriving together are staggered.
@@ -94,8 +152,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       }
 
       // "#" placeholder links (not filled in yet) should not jump to the top of the page.
+      // Screen readers hear why nothing happened; Pip says it too.
       document.addEventListener("click", (event) => {
-        if ((event.target as Element).closest('a[href="#"]')) event.preventDefault();
+        const link = (event.target as Element).closest('a[href="#"]');
+        if (!link) return;
+        event.preventDefault();
+        document.dispatchEvent(
+          new CustomEvent("companion", { detail: { type: "placeholder", target: link, announce: "This link isn’t available yet." } }),
+        );
       });
     </script>
   </body>

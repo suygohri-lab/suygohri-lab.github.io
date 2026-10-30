@@ -11,7 +11,15 @@ export default defineConfig({
   base: "/",
   trailingSlash: "ignore",
   integrations: [sitemap()],
+  // Content-Security-Policy friendly output (see the CSP <meta> in BaseLayout): every script and
+  // stylesheet is a separate file, never inlined into the page, so script-src/style-src 'self' work.
+  build: {
+    inlineStylesheets: "never",
+  },
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      assetsInlineLimit: 0,
+    },
   },
 });

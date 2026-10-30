@@ -204,6 +204,6 @@
 
     // Skip the automatic intro walk for visitors who asked for reduced motion;
     // footprints still follow their own pointer.
-    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) introAnimation();
+    if (!document.documentElement.hasAttribute("data-reduced-motion")) introAnimation();
   }
 </script>

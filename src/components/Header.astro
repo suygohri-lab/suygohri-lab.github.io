@@ -13,14 +13,15 @@ const linkClass =
   "rounded-lg px-3 py-2 text-sm font-medium text-muted transition-all duration-200 ease-in-out hover:bg-surface hover:text-fg aria-[current=page]:text-link";
 ---
 
-<header class="sticky top-0 z-40 border-b-2 border-ink bg-bg/95 sm:bg-bg/85 sm:backdrop-blur-md">
+<!-- data-companion-*: Minerva the owl perches on this header, in the gap after the name and before the controls. -->
+<header data-companion-perch class="sticky top-0 z-40 border-b-2 border-ink bg-bg/95 sm:bg-bg/85 sm:backdrop-blur-md">
   <Container class="flex h-16 items-center justify-between gap-4">
-    <a href="/" class="inline-flex min-h-11 items-center text-base font-bold tracking-tight text-fg transition-all duration-200 ease-in-out hover:text-link">
+    <a href="/" data-companion-perch-after class="inline-flex min-h-11 items-center text-base font-bold tracking-tight text-fg transition-all duration-200 ease-in-out hover:text-link">
       {site.name}
     </a>
 
     <div class="flex items-center gap-1">
-      <nav aria-label="Main" class="hidden sm:block">
+      <nav aria-label="Main" data-companion-perch-before class="hidden sm:block">
         <ul class="flex items-center gap-1">
           {
             nav.map(({ label, href }) => (
@@ -39,6 +40,7 @@ const linkClass =
       <button
         type="button"
         id="menu-button"
+        data-companion-perch-before
         aria-label="Open menu"
         aria-expanded="false"
         aria-controls="mobile-nav"
@@ -75,6 +77,7 @@ const linkClass =
     button?.setAttribute("aria-expanded", String(open));
     button?.setAttribute("aria-label", open ? "Close menu" : "Open menu");
     menu?.classList.toggle("hidden", !open);
+    document.dispatchEvent(new CustomEvent("companion", { detail: { type: "menu", open } }));
   };
 
   button?.addEventListener("click", () => setOpen(button.getAttribute("aria-expanded") !== "true"));

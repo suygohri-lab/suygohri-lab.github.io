@@ -27,7 +27,7 @@ const outbound: { label: string; url: string; icon: IconName }[] = [
 ];
 ---
 
-<Card as="article" interactive>
+<Card as="article" interactive data-companion-item data-companion-title={title}>
   <div class="flex flex-wrap items-center gap-2">
     <span class="rounded-md border-2 border-ink px-2 py-0.5 text-xs font-bold tracking-wide text-fg">
       {venueShort ?? venue} {year}
@@ -130,6 +130,8 @@ const outbound: { label: string; url: string; icon: IconName }[] = [
       toggle.setAttribute("aria-expanded", String(open));
       panel.toggleAttribute("data-open", open);
       panel.inert = !open;
+      // Opening a paper's abstract or BibTeX sends Minerva over to it.
+      if (open) document.dispatchEvent(new CustomEvent("companion", { detail: { type: "opened", target: toggle.closest("article") } }));
       return;
     }
 
@@ -146,10 +148,12 @@ const outbound: { label: string; url: string; icon: IconName }[] = [
         copy.setAttribute("data-copied", "");
         setTimeout(() => copy.removeAttribute("data-copied"), 1500);
         announce("BibTeX copied to clipboard.");
+        document.dispatchEvent(new CustomEvent("companion", { detail: { type: "copied" } }));
       } catch {
         // Clipboard blocked (e.g. no permission): select the text so it can be copied by hand.
         if (code) getSelection()?.selectAllChildren(code);
         announce("Could not copy automatically. The BibTeX is selected; press Ctrl+C or Command+C.");
+        document.dispatchEvent(new CustomEvent("companion", { detail: { type: "copy-failed" } }));
       }
     }
   });
